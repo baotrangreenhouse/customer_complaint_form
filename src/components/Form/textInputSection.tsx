@@ -16,7 +16,7 @@ const TextInputSection = (props : TextInputSectionProps) => {
   const {label, name, type, value, placeholder, isError, onChange, readonly} = props;
 
   return (
-    <>
+    <div className="flex flex-col">
       <label
         htmlFor={name}
         className="text-black text-sm font-medium block mb-2"
@@ -38,7 +38,7 @@ const TextInputSection = (props : TextInputSectionProps) => {
         spellCheck='false'
         readOnly={readonly}
       />
-    </>
+    </div>
   )
 }
 
