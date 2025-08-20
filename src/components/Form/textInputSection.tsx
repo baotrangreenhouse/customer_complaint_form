@@ -16,7 +16,7 @@ const TextInputSection = (props : Props) => {
   const {label, name, type, value, placeholder, isError, onChange, readonly} = props;
 
   return (
-    <div className="flex flex-col">
+    <>
       <label
         htmlFor={name}
         className="text-black text-sm font-medium block mb-2"
@@ -27,8 +27,7 @@ const TextInputSection = (props : Props) => {
         name={name}
         type={type}
         className={cn(`text--content text-black input--box p-2`, {
-          'border-b-red-600': isError === true,
-          'border-b-[#A1A1AA]': isError === false,
+          'border-red-600': isError === true,
         })}
         placeholder={placeholder}
         value={value}
@@ -38,7 +37,7 @@ const TextInputSection = (props : Props) => {
         spellCheck='false'
         readOnly={readonly}
       />
-    </div>
+    </>
   )
 }
 

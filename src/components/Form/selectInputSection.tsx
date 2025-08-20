@@ -7,6 +7,7 @@ import Select from "react-select";
 
 
 interface Props {
+  label: string,
   name: string,
   options?: FormInputOptionType[],
   type: string,
@@ -66,7 +67,7 @@ const colourStyles: StylesConfig<FormInputOptionType> = {
 };
 
 const SelectBox = (props: Props) => {
-  const {options, name, value, placeholder, onChange} = props;
+  const {options, label, name, placeholder, onChange} = props;
 
   const [selectedOption, setSelectedOption] = useState<SingleValue<FormInputOptionType>>();
 
@@ -77,13 +78,25 @@ const SelectBox = (props: Props) => {
 
   return (
     options && (
-      <Select
-        instanceId={name}
-        options={options}
-        styles={colourStyles}
-        placeholder={placeholder}
-        value={selectedOption}
-        onChange={(s) => handleSelectChange(s)} isMulti={false} />)
+      <>
+        <label
+          htmlFor={name}
+          className="text-black text-sm font-medium block mb-2"
+        >
+          {label}
+        </label>
+        <Select
+          instanceId={name}
+          options={options}
+          styles={colourStyles}
+          placeholder={placeholder}
+          value={selectedOption}
+          onChange={(s) => handleSelectChange(s)}
+          isMulti={false}
+          isClearable={true}
+        />
+      </>
+    )
   )
 }
 
