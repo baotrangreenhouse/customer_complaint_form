@@ -26,7 +26,7 @@ const TextInputSection = (props : Props) => {
       <input
         name={name}
         type={type}
-        className={cn(`text--content text-black input--line p-2`, {
+        className={cn(`text--content text-black input--box p-2`, {
           'border-b-red-600': isError === true,
           'border-b-[#A1A1AA]': isError === false,
         })}

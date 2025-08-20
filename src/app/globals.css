@@ -9,8 +9,8 @@
   --background-grey-color: #f5f4f5;
   --text-grey-color: #37352F;
   --box-grey-color: #e7e7e76b;
-  --placeholder-grey-color: #A1A1AA;
-
+  
+  --grey-color: #A1A1AA;
   --black-color: #1E1E24;
   --pink-color: #FB9F89;
   --khaki-color: #D5C7B8;
@@ -48,10 +48,10 @@
     @apply grid grid-cols-[minmax(40px,1fr)_minmax(auto,708px)_minmax(40px,1fr)] sm:grid-cols-[minmax(96px,1fr)_minmax(auto,708px)_minmax(96px,1fr)];
   }
   .input--box {
-    @apply block w-full rounded-lg bg-inherit focus:border-[#1E1E24] transition-colors ease-linear placeholder:text-[#A1A1AA] appearance-none focus:outline-none;
+    @apply block w-full rounded-lg bg-[white] border-2 border-[var(--grey-color)] hover:border-[var(--black-color)] focus:border-[var(--black-color)] transition-colors ease-linear placeholder:text-[var(--grey-color)] appearance-none focus:outline-none;
   }
   .input--line {
-    @apply block w-full bg-inherit border-b-2 focus:border-b-[#1E1E24] transition-colors ease-linear placeholder:text-[#A1A1AA] appearance-none focus:outline-none;
+    @apply block w-full bg-inherit border-b-2 focus:border-b-[var(--black-color)] transition-colors ease-linear placeholder:text-[var(--grey-color)] appearance-none focus:outline-none;
   }
   
   .box--shadow {
