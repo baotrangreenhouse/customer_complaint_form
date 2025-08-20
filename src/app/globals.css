@@ -7,7 +7,8 @@
 :root {
   --background-white-color: white;
   --background-grey-color: #f5f4f5;
-  --text-gray-color: #37352F;
+  --text-grey-color: #37352F;
+  --box-grey-color: #e7e7e76b;
   --placeholder-grey-color: #A1A1AA;
 
   --black-color: #1E1E24;

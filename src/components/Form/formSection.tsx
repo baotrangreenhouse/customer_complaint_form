@@ -2,111 +2,49 @@
 
 import { FormEvent, useState } from "react";
 import TextInputSection from "./textInputSection";
+import { FormInputDataType, FormInputOptionType } from "@/types/type";
+import { FormInputFieldObject } from "@/types/data";
+import SelectBox from "./selectInputSection";
+import { SingleValue } from "react-select";
 
 
-const InputAccessories = {
-  name: {
-    label: "Name",
-    name: "name",
-    type: "text",
-    placeholder: "Your Name",
-    readonly: false
-  },
-  location: {
-    label: "Location",
-    name: "location",
-    type: "text",
-    placeholder: "Location",
-    readonly: false
-  },
-  locationDetail: {
-    label: "Location Detail",
-    name: "locationDetail",
-    type: "text",
-    placeholder: "Location Detail",
-    readonly: false
-  },
-  customerName: {
-    label: "Customer Name",
-    name: "customerName",
-    type: "text",
-    placeholder: "Customer Name",
-    readonly: false
-  },
-  bestBeforeDate: {
-    label: "BBD",
-    name: "bestBeforeDate",
-    type: "date",
-    placeholder: "BBD",
-    readonly: false
-  },
-  productSize: {
-    label: "Product Size",
-    name: "productSize",
-    type: "text",
-    placeholder: "Product Size",
-    readonly: false
-  },
-  productFlavour: {
-    label: "Product Flavour",
-    name: "productFlavour",
-    type: "text",
-    placeholder: "Product Flavour",
-    readonly: false
-  },
-  productName: {
-    label: "Product Name",
-    name: "productName",
-    type: "text",
-    placeholder: "Product Name",
-    readonly: false
-  },
-  issue: {
-    label: "Issue",
-    name: "issue",
-    type: "text",
-    placeholder: "Issue",
-    readonly: false
-  },
-  issueDetail: {
-    label: "Issue Detail",
-    name: "issueDetail",
-    type: "text",
-    placeholder: "Issue Detail",
-    readonly: false
-  }
-}
+const FormInputData: FormInputDataType = {
+  name: "",
+  location: "",
+  locationDetail: "",
+  customerName: "",
+  bestBeforeDate: "", // change to date later
+  productSize: "",
+  productFlavour: "",
+  productName: "",
+  issue: "",
+  issueDetail: ""
+};
 
-
-type Input = {
-  name: string,
-  location: string,
-  locationDetail: string,
-  customerName: string,
-  bestBeforeDate: string, // change to date later
-  productSize: string,
-  productFlavour: string,
-  productName: string,
-  issue: string,
-  issueDetail: string
-}
-
+const FormInputOption_Location: FormInputOptionType[] = [
+  {value: "juice1", label: "juice1", color: "#1E1E24"}, {value: "juice2", label: "juice2", color: "#FB9F89"}
+]
 
 const FormSection = () => {
-  
-  const [input, setInput] = useState<Input>({name: "", location: ""});
-  
+  const [inputData, setInputData] = useState<FormInputDataType>(FormInputData);
 
   const handleChange = (event: FormEvent<HTMLFormElement>) => {
-    setInput({
-      ...input,
+    setInputData({
+      ...inputData,
       [event.currentTarget.name]: event.currentTarget.value
     })
   }
+  const handleSelectChangeWrapper = (name: string, selectedOptionData: string) => {
+    setInputData({
+      ...inputData,
+      [name]: selectedOptionData
+    })
+  }
+
   return (
     <form className="flex flex-col">
-      <TextInputSection {...InputAccessories.name} value={input.name} onChange={handleChange} isError={false} />
-
+      <TextInputSection {...FormInputFieldObject.name} value={inputData.name} onChange={handleChange} isError={false} />
+      <SelectBox {...FormInputFieldObject.location} options={FormInputOption_Location} value={inputData.location} onChange={handleSelectChangeWrapper} isError={false} />
     </form>
   )
 }

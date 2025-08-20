@@ -1,7 +1,7 @@
 import { cn } from "@/lib/tailwind-merge";
 
 
-interface TextInputSectionProps {
+interface Props {
   label: string,
   name: string,
   type: string,
@@ -12,7 +12,7 @@ interface TextInputSectionProps {
   readonly: boolean
 }
 
-const TextInputSection = (props : TextInputSectionProps) => {
+const TextInputSection = (props : Props) => {
   const {label, name, type, value, placeholder, isError, onChange, readonly} = props;
 
   return (

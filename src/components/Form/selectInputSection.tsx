@@ -1,18 +1,19 @@
-import { OptionType } from "@/types/type";
+'use client'
+import { FormInputOptionType } from "@/types/type";
 import chroma from "chroma-js";
+import { useState } from "react";
 import { SingleValue, StylesConfig } from "react-select";
 import Select from "react-select";
 
 
-
 interface Props {
   name: string,
-  options?: OptionType[],
+  options?: FormInputOptionType[],
   type: string,
-  value: SingleValue<OptionType>,
+  value: string,
   placeholder: string,
   isError: boolean,
-  onChange: (selectedOption: SingleValue<OptionType>) => void,
+  onChange: Function,
 }
 
 const dot = (color = 'transparent') => ({
@@ -31,7 +32,7 @@ const dot = (color = 'transparent') => ({
 });
 
 type Color = chroma.Color;
-const colourStyles: StylesConfig<OptionType> = {
+const colourStyles: StylesConfig<FormInputOptionType> = {
   control: (styles, { isFocused }) => ({
     ...styles, backgroundColor: 'white', borderWidth: '2px', ':hover': { borderColor: '#1E1E24' }, borderColor: isFocused ? '#1E1E24' : '#A1A1AA', outline: 'none', borderRadius: '0.5rem', boxShadow: '',
   }),
@@ -64,7 +65,16 @@ const colourStyles: StylesConfig<OptionType> = {
   singleValue: (styles, { data }) => ({ ...styles, ...dot(data.color) }),
 };
 
-const SelectBox: React.FC<Props> = ({ name, options, type, placeholder, value, isError, onChange }) => {
+const SelectBox = (props: Props) => {
+  const {options, name, value, placeholder, onChange} = props;
+
+  const [selectedOption, setSelectedOption] = useState<SingleValue<FormInputOptionType>>();
+
+  const handleSelectChange = (selectedOption: SingleValue<FormInputOptionType>) => {
+    setSelectedOption(selectedOption);
+    onChange(name, selectedOption?.value);
+  }
+
   return (
     options && (
       <Select
@@ -72,8 +82,8 @@ const SelectBox: React.FC<Props> = ({ name, options, type, placeholder, value, i
         options={options}
         styles={colourStyles}
         placeholder={placeholder}
-        value={value}
-        onChange={(e) => onChange(e)} isMulti={false} />)
+        value={selectedOption}
+        onChange={(s) => handleSelectChange(s)} isMulti={false} />)
   )
 }
 
