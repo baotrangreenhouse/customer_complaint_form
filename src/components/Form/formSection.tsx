@@ -5,7 +5,7 @@ import TextInputSection from "./textInputSection";
 import { FormInputDataType, FormInputOptionType } from "@/types/type";
 import { FormInputFieldObject } from "@/types/data";
 import SelectBox from "./selectInputSection";
-import { PRODUCT_FLAVOUR, PRODUCT, getFlavour, getSize } from "@/datas/data";
+import { LOCATION, PRODUCT, SIZE_SORT, getFlavour, getSize } from "@/datas/data";
 
 const FormInputData: FormInputDataType = {
   name: "",
@@ -20,23 +20,25 @@ const FormInputData: FormInputDataType = {
   issueDetail: ""
 };
 
-const FormInputOption_Location: FormInputOptionType[] = [
-  {value: "juice1", label: "juice1", color: "#1E1E24"}, {value: "juice2", label: "juice2", color: "#FB9F89"}
-];
+const FormInputOption_Location: FormInputOptionType[] = LOCATION.map(location => {
+  return {value: location, label: location, color: "#1E1E24"};
+})
 
 
 const FormSection = () => {
   const [inputData, setInputData] = useState<FormInputDataType>(FormInputData);
 
   const FormInputOption_Flavour: FormInputOptionType[] = getFlavour(PRODUCT.filter(function(productObject) {
-    return inputData.productSize == "" || productObject.productSize == inputData.productSize;
-  })).map(productFlavour => {
+    return inputData.productSize == "" || productObject.productSize.includes(inputData.productSize);
+  })).sort().map(productFlavour => { // sort based on lexigraphical order
     return {value: productFlavour, label: productFlavour, color: "#1E1E24"};
   })
 
   const FormInputOption_Size: FormInputOptionType[] = getSize(PRODUCT.filter(function(productObject) {
     return inputData.productFlavour == "" || productObject.productFlavour == inputData.productFlavour;
-  })).map(productFlavour => {
+  })).sort((a: string, b: string) => {
+    return SIZE_SORT.indexOf(a) - SIZE_SORT.indexOf(b);
+  }).map(productFlavour => { // sort based on size
     return {value: productFlavour, label: productFlavour, color: "#1E1E24"};
   })
 

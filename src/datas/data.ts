@@ -1,100 +1,113 @@
 import { ProductObjectType } from "./type";
 
 const RAW_PRODUCT: string[] = [
-"Adaptogenic Cafe Latte,0 mL"
-,"Adaptogenic Mocha Latte,0 mL"
-,"Celery,300 mL"
-,"Deep Roots,300 mL"
-,"Farma-C,300 mL"
-,"Gatsby,300 mL"
-,"Genius,300 mL"
-,"Ginger Apple Crips,300 mL"
-,"Ginger-Aid+,300 mL"
-,"Rose,300 mL"
-,"The Giver,300 mL"
-,"The Good,300 mL"
-,"The Stranger,300 mL"
-,"Wing Man,300 mL"
-,"Blue Lemonade,300 mL"
-,"Fiery Ginger Lemonade,300 mL"
-,"Lavender Lemonade,300 mL"
-,"Spicy Turmeric Lemonade,300 mL"
-,"Strawberry Lemonade,300 mL"
-,"Almondmilk,300 mL"
-,"Almondmilk - Unsweetened,300 mL"
-,"Holiday Nog,0 mL"
-,"Oat Creamer - Unsweetened,0 mL"
-,"Oat Creamer,0 mL"
-,"Oatmilk,0 mL"
-,"Oatmlik - Unsweetened,0 mL"
-,"Pumpkin Spcice Oatmilk,0 mL"
-,"Easy Greens Super Smoothie,300 mL"
-,"Marvelous Mango Super Smoothie,300 mL"
-,"Chocolate Protein Shake,300 mL"
-,"Coffee Protein Shake,300 mL"
-,"Matcha Protein Shake,300 mL"
-,"Rococoa,300 mL"
-,"Vanilla Almond Protein Shake,300 mL"
-,"Blood Orange & Hibiscus Probiotic Sparkling Water,355 mL"
-,"Blueberry & Elderflower Probiotic Sparkling Water,355 mL"
-,"Citrus Cayenne Kombucha,325 mL"
-,"Clarify Dandelion Sparkling Phytotonic,355 mL"
-,"Clarify Sparkling Phytotonic Can,355 mL"
-,"Cranberry Kombucha,325 mL"
-,"Ginger Beer,325 mL"
-,"Ginger Turmeric  Kombucha,325 mL"
-,"Ginger Turmeric Kombucha,325 mL"
-,"Grapefruit Kombucha,325 mL"
-,"Grapefruit Yuzu & Rosemary Probiotic Sparkling Water,355 mL"
-,"Lime Lemongrass Kombucha,325 mL"
-,"Ultraviolet  Kombucha,325 mL"
-,"Ultraviolet Kombucha,325 mL"
-,"Unwind Passionflower Sparkling Phytotonic,355 mL"
-,"Uplift Ashwagandha Sparkling Phytotonic,355 mL"
-,"Uplift Sparkling Phytotonic Can,355 mL"
-,"Variety Pack Probiotic Sparkling Water,355 mL"
-,"Clarify Dandelion Phytotonic Booster,60 mL"
-,"Detox,60 mL"
-,"Everyday Greens,60 mL"
-,"Farma-C+,60 mL"
-,"Fiery Ginger,60 mL"
-,"Fiery Ginger Shot Box,60 mL"
-,"Flu Shot,60 mL"
-,"Ginger Defence,60 mL"
-,"Glow,60 mL"
-,"Green Ritual,60 mL"
-,"Immunity Booster Kit,60 mL"
-,"Immunity Variety Pack,60 mL"
-,"Inside Job,60 mL"
-,"Lullaby,60 mL"
-,"Memoir,60 mL"
-,"Mood Shine,60 mL"
-,"Multipack,60 mL"
-,"Pick-Me-Up,60 mL"
-,"Power-Up Mushroom,60 mL"
-,"Smart Energy,60 mL"
+"Adaptogenic Cafe Latte, 300 mL", // lattes
+"Adaptogenic Mocha Latte, 300 mL",
+
+"Celery, 300 mL", // cold-pressed juices
+"Deep Roots, 300 mL",
+"Farma-C, 60 mL, 300 mL",
+"Gatsby, 300 mL, 900 mL, 946 mL",
+"Genius, 300 mL",
+"Ginger Apple Crips, 300 mL, 946 mL",
+"Ginger-Aid+, 300 mL",
+"Rose, 300 mL",
+"The Giver, 300 mL",
+"The Good, 300 mL",
+"The Stranger, 300 mL",
+"Wing Man, 300 mL",
+
+"Blue Lemonade, 300 mL", // lemonades
+"Fiery Ginger Lemonade, 300 mL",
+"Lavender Lemonade, 300 mL",
+"Spicy Turmeric Lemonade, 300 mL",
+"Strawberry Lemonade, 300 mL",
+
+"Almondmilk, 946 mL", // nutmilks
+"Almondmilk - Unsweetened, 946 mL",
+"Oatmilk, 946 mL",
+"Oatmilk - Unsweetened, 946 mL",
+"Pumpkin Spcice Oatmilk, 946 mL",
+"Holiday Nog, 946 mL",
+"Oat Creamer, 473 mL",
+"Oat Creamer - Unsweetened, 473 mL",
+
+"Easy Greens Super Smoothie, 300 mL, 900 mL", // RTD smoothies
+"Marvelous Mango Super Smoothie, 300 mL, 900 mL",
+
+"Chocolate Protein Shake, 300 mL, 900 mL", // shakes
+"Coffee Protein Shake, 300 mL",
+"Matcha Protein Shake, 300 mL, 900 mL",
+"Rococoa, 300 mL, 946 mL",
+"Vanilla Almond Protein Shake, 300 mL, 900 mL",
+
+"Blood Orange & Hibiscus Probiotic Sparkling Water, 355 mL", // sparklings
+"Blueberry & Elderflower Probiotic Sparkling Water, 355 mL",
+"Grapefruit Yuzu & Rosemary Probiotic Sparkling Water, 355 mL",
+"Citrus Cayenne Kombucha, 325 mL",
+"Cranberry Kombucha, 325 mL",
+"Ginger Turmeric Kombucha, 325 mL",
+"Grapefruit Kombucha, 325 mL",
+"Lime Lemongrass Kombucha, 325 mL",
+"Ultraviolet Kombucha, 325 mL",
+"Ginger Beer, 340 mL",
+"Unwind Passionflower Sparkling Phytotonic, 355 mL",
+"Uplift Ashwagandha Sparkling Phytotonic, 355 mL",
+"Clarify Dandelion Sparkling Phytotonic, 355 mL",
+
+"Detox, 60 mL", // shots
+"Everyday Greens, 60 mL",
+"Fiery Ginger, 60 mL, 1.26 L",
+"Flu Shot, 60 mL",
+"Ginger Defence, 60 mL",
+"Glow, 60 mL",
+"Green Ritual, 60 mL",
+"Inside Job, 60 mL",
+"Lullaby, 60 mL",
+"Memoir, 60 mL",
+"Mood Shine, 60 mL",
+"Pick-Me-Up, 60 mL",
+"Power-Up Mushroom, 60 mL",
+"Smart Energy, 60 mL"
 ];
 
 export const PRODUCT: ProductObjectType[] = RAW_PRODUCT.map(product => {
   const s = product.split(",");
   const flavour = s[0];
-  const size = s[1];
+  var size: string[] = []
+  for (var i = 1; i < s.length; ++i) {
+    size.push(s[i]);
+  }
   const name = s[0] + " " + s[1];
   return {productFlavour: flavour, productSize: size, productName: name};
 });
 
-export const getFlavour = (products: ProductObjectType[]) => {
+export const getFlavour = (products: ProductObjectType[]) : string[] => {
+  // Set is to remove duplicates
   return [... new Set(products.map(productObject => {
     return productObject.productFlavour;
   }))];
 }
 
-export const getSize = (products: ProductObjectType[]) => {
-  return [... new Set(products.map(productObject => {
-    return productObject.productSize;
-  }))]
+export const getSize = (products: ProductObjectType[]) : string[] => {
+  var size: string[] = [];
+  for (var i = 0; i < products.length; ++i) {
+    size = size.concat(products[i].productSize);
+  }
+  return [... new Set(size)]; // remove duplicates
 }
 
-const RAW_LOCATION: string[] = [
-  
+export const SIZE_SORT: string[] = ["60 mL", "300 mL", "325 mL", "340 mL", "355 mL", "900 mL", "946 mL", "1.26 mL"];
+
+export const LOCATION: string[] = [
+  "Brookfield",
+  "Forest Hill",
+  "Macpherson",
+  "Queen West",
+  "St. Clair", 
+  "Union Station", 
+  "Home Delivery",
+  "Amazon",
+  "Nashua",
+  "Customer Service (Grocery / Non-Greenhouse Retail Store)"
 ]
