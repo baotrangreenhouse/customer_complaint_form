@@ -50,26 +50,33 @@ const FormSection = () => {
         const [FormInputOption_ProductFlavour, setFormInputOption_ProductFlavour] = useState<FormInputOption_Type[]>(convertToOption(FLAVOUR));
         const [FormInputOption_ProductSize, setFormInputOption_ProductSize] = useState<FormInputOption_Type[]>(convertToOption(SIZE));
 
-
+        const handleChange_Product = (event: FormEvent<HTMLFormElement>) => {
+          // handle change for bbd
+          var newProduct = inputData.product;
+          newProduct[index]["bestBeforeDate"] = event.currentTarget.value;
+          setInputData({
+            ...inputData,
+            product: newProduct
+          })
+        }
         const handleSelectChangeWrapper_Product = (name: "productFlavour" | "productSize" | "bestBeforeDate", selectedOptionData: string | undefined) => {
           // handle change
           var newProduct = inputData.product;
           newProduct[index][name] = selectedOptionData ? selectedOptionData : "";
           setInputData({
             ...inputData,
-            ["product"]: newProduct  
+            product: newProduct  
           })
           // handle option
           setFormInputOption_ProductFlavour(convertToOption(FLAVOUR.filter((flavour: string) => filterFlavour(flavour, product.productSize))));
           setFormInputOption_ProductSize(convertToOption(SIZE.filter((size: string) => filterSize(product.productFlavour, size))));
           console.log(product);
         }
-
         return (
           <div key={index}>
             <SelectBox {...FormInputFieldObject.productFlavour} options={FormInputOption_ProductFlavour} value={product.productFlavour} onChange={handleSelectChangeWrapper_Product} />
             <SelectBox {...FormInputFieldObject.productSize} options={FormInputOption_ProductSize} value={product.productSize} onChange={handleSelectChangeWrapper_Product} />
-            {/* <SelectBox {...FormInputFieldObject.bestBeforeDate} options={} value={} onChange={} /> */}
+            <InputBox {...FormInputFieldObject.bestBeforeDate} value={product.bestBeforeDate} onChange={handleChange_Product} />
           </div>
         )
       })
