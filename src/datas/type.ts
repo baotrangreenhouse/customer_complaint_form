@@ -1,7 +1,6 @@
 
 
-export type ProductObjectType = {
-  productName: string,
+export type ProductObject_Type = {
   productFlavour: string,
-  productSize: string[],
+  productSize: string[]
 }

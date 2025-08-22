@@ -1,76 +1,76 @@
-import { FormInputFieldObjectType } from "./type";
+import { FormInputFieldObject_Type } from "./type";
 
 
-export const FormInputFieldObject: FormInputFieldObjectType = {
-  name: {
-    label: "Name",
-    name: "name",
-    type: "text",
-    placeholder: "Your Name",
-    readonly: false
-  },
-  location: {
-    label: "Location",
-    name: "location",
-    type: "text",
-    placeholder: "Location",
-    readonly: false
-  },
-  locationDetail: {
-    label: "Location Detail",
-    name: "locationDetail",
-    type: "text",
-    placeholder: "Location Detail",
-    readonly: false
-  },
-  customerName: {
+export const FormInputFieldObject: FormInputFieldObject_Type = {
+  customerName: { // input box
     label: "Customer Name",
     name: "customerName",
-    type: "text",
-    placeholder: "Customer Name",
-    readonly: false
+    type: "text"
   },
-  bestBeforeDate: {
-    label: "BBD",
-    name: "bestBeforeDate",
-    type: "date",
-    placeholder: "BBD",
-    readonly: false
+  location: { // input box
+    label: "Location",
+    name: "location",
+    type: "text"
   },
-  productSize: {
-    label: "Product Size",
-    name: "productSize",
-    type: "text",
-    placeholder: "Product Size",
-    readonly: false
-  },
-  productFlavour: {
+  productFlavour: { // select
     label: "Product Flavour",
     name: "productFlavour",
-    type: "text",
-    placeholder: "Product Flavour",
-    readonly: false
+    type: "text"
   },
-  productName: {
-    label: "Product Name",
-    name: "productName",
-    type: "text",
-    placeholder: "Product Name",
-    readonly: false
+  productSize: { // select
+    label: "Product Size",
+    name: "productSize",
+    type: "text"
   },
-  issue: {
+  bestBeforeDate: { // input box
+    label: "Best Before Date (BBD)",
+    name: "bestBeforeDate",
+    type: "date"
+  },
+  complaintType: { // select customer complaint / store complaint
+    label: "Complaint Type",
+    name: "complaintType",
+    type: "text"
+  },
+  complaintTypeDetails: { // text area
+    label: "Complaint Type Details",
+    name: "complaintTypeDetails",
+    type: "text"
+  },
+  healthConcern: { // select yes/no
+    label: "Health Concern?",
+    name: "healthConcern",
+    type: "text"
+  },
+  issue: { // multi select
     label: "Issue",
     name: "issue",
-    type: "text",
-    placeholder: "Issue",
-    readonly: false
+    type: "text"
   },
-  issueDetail: {
-    label: "Issue Detail",
-    name: "issueDetail",
-    type: "text",
-    placeholder: "Issue Detail",
-    readonly: false
+  issueDetails: { // text area
+    label: "Issue Details",
+    name: "issueDetails",
+    type: "text"
+  },
+  sampleHeld: { // select yes/no
+    label: "Sample Held",
+    name: "sampleHeld",
+    type: "text"
+  },
+  response: { // select
+    label: "Response",
+    name: "response",
+    type: "text"
+  },
+  followUpRequired: { // select yes/no
+    label: "Follow Up Required?",
+    name: "followUpRequired",
+    type: "text"
+  },
+  additionalNotes: { // text area
+    label: "Additional Notes",
+    name: "Additional Notes",
+    type: "text"
   }
 }
 

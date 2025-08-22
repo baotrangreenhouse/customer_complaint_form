@@ -1,5 +1,5 @@
 'use client'
-import { FormInputOptionType } from "@/types/type";
+import { FormInputOption_Type } from "@/types/type";
 import chroma from "chroma-js";
 import { useState } from "react";
 import { SingleValue, StylesConfig } from "react-select";
@@ -9,41 +9,25 @@ import Select from "react-select";
 interface Props {
   label: string,
   name: string,
-  options?: FormInputOptionType[],
+  options?: FormInputOption_Type[],
   type: string,
   value: string,
-  placeholder: string,
-  isError: boolean,
   onChange: Function,
 }
 
-const dot = (color = 'transparent') => ({
-  alignItems: 'center',
-  display: 'flex',
-
-  ':before': {
-    backgroundColor: color,
-    borderRadius: '10px',
-    content: '" "',
-    display: 'block',
-    marginRight: '8px',
-    height: '11px',
-    width: '11px',
-  },
-});
-
 type Color = chroma.Color;
-const colourStyles: StylesConfig<FormInputOptionType> = {
+const colourStyles: StylesConfig<FormInputOption_Type> = {
   control: (styles, { isFocused }) => ({
-    ...styles, backgroundColor: 'white', borderWidth: '2px', ':hover': { borderColor: '#1E1E24' }, borderColor: isFocused ? '#1E1E24' : '#A1A1AA', outline: 'none', borderRadius: '0.5rem', boxShadow: '',
+    ...styles, backgroundColor: 'white', borderWidth: '2px', ':hover': { borderColor: '#1E1E24' }, borderColor: isFocused ? '#1E1E24' : '#A1A1AA', outline: 'none', borderRadius: '0.5rem', boxShadow: ''
   }),
-  option: (styles, { data, isFocused, isSelected }) => {
-    const color: Color = chroma(data.color);
+  option: (styles, { isFocused, isSelected }) => {
+    const defaultColor = "#37352F";
+    const color: Color = chroma(defaultColor);
     return {
       ...styles,
       borderRadius: '0.5rem',
       backgroundColor: isSelected
-        ? data.color
+        ? defaultColor
         : isFocused
           ? color.alpha(0.1).css()
           : undefined,
@@ -51,34 +35,31 @@ const colourStyles: StylesConfig<FormInputOptionType> = {
         ? chroma.contrast(color, 'white') > 2
           ? 'white'
           : 'black'
-        : data.color,
+        : 'black',
       cursor: 'default',
       ':active': {
         ...styles[':active'],
         backgroundColor: isSelected
-          ? data.color
+          ? defaultColor
           : color.alpha(0.3).css(),
       },
     };
-  },
-  input: (styles) => ({ ...styles, ...dot(), }),
-  placeholder: (styles) => ({ ...styles, ...dot('#ccc') }),
-  singleValue: (styles, { data }) => ({ ...styles, ...dot(data.color) }),
+  }
 };
 
 const SelectBox = (props: Props) => {
-  const {options, label, name, placeholder, onChange} = props;
+  const {options, label, name, onChange} = props;
 
-  const [selectedOption, setSelectedOption] = useState<SingleValue<FormInputOptionType>>();
+  const [selectedOption, setSelectedOption] = useState<SingleValue<FormInputOption_Type>>();
 
-  const handleSelectChange = (selectedOption: SingleValue<FormInputOptionType>) => {
+  const handleSelectChange = (selectedOption: SingleValue<FormInputOption_Type>) => {
     setSelectedOption(selectedOption);
     onChange(name, selectedOption?.value);
   }
 
   return (
     options && (
-      <>
+      <div>
         <label
           htmlFor={name}
           className="text-black text-sm font-medium block mb-2"
@@ -89,13 +70,13 @@ const SelectBox = (props: Props) => {
           instanceId={name}
           options={options}
           styles={colourStyles}
-          placeholder={placeholder}
+          className="text--content"
           value={selectedOption}
           onChange={(s) => handleSelectChange(s)}
           isMulti={false}
           isClearable={true}
         />
-      </>
+      </div>
     )
   )
 }

@@ -1,4 +1,5 @@
-import { ProductObjectType } from "./type";
+import { FormInputOption_Type } from "@/types/type";
+import { ProductObject_Type } from "./type";
 
 const RAW_PRODUCT: string[] = [
 "Adaptogenic Cafe Latte, 300 mL", // lattes
@@ -71,19 +72,39 @@ const RAW_PRODUCT: string[] = [
 "Smart Energy, 60 mL"
 ];
 
-export const PRODUCT: ProductObjectType[] = RAW_PRODUCT.map(product => {
-  const s = product.split(",");
+export const PRODUCT: ProductObject_Type[] = RAW_PRODUCT.map(product => {
+  const s = product.split(", ");
   const flavour = s[0];
-  var size: string[] = []
-  for (var i = 1; i < s.length; ++i) {
-    size.push(s[i]);
-  }
-  const name = s[0] + " " + s[1];
-  return {productFlavour: flavour, productSize: size, productName: name};
+  var size: string[] = s.slice(1);
+  return {productFlavour: flavour, productSize: size};
 });
 
+export const FLAVOUR: string[] = PRODUCT.map((product) => product.productFlavour);
+export const SIZE: string[] = ["60 mL", "300 mL", "325 mL", "340 mL", "355 mL", "900 mL", "946 mL", "1.26 mL"];
+
+export const LOCATION: string[] = [
+  "Brookfield",
+  "Forest Hill",
+  "Macpherson",
+  "Queen West",
+  "St. Clair",
+  "Union Station",
+  "Home Delivery",
+  "Amazon",
+  "Nashua",
+  "Customer Service (Grocery / Non-Greenhouse Retail Store)"
+]
+
+
+
+
+export const convertToOption = (values: string[]) : FormInputOption_Type[] => {
+  return values.map((value: string) => {
+    return {value: value, label: value}; 
+  })
+}
+
 export const getFlavour = (products: ProductObjectType[]) : string[] => {
-  // Set is to remove duplicates
   return [... new Set(products.map(productObject => {
     return productObject.productFlavour;
   }))];
@@ -94,20 +115,32 @@ export const getSize = (products: ProductObjectType[]) : string[] => {
   for (var i = 0; i < products.length; ++i) {
     size = size.concat(products[i].productSize);
   }
-  return [... new Set(size)]; // remove duplicates
+  return [... new Set(size)];
 }
 
-export const SIZE_SORT: string[] = ["60 mL", "300 mL", "325 mL", "340 mL", "355 mL", "900 mL", "946 mL", "1.26 mL"];
+export const filterFlavour = (flavour: string, size: string) : boolean => {
+  if (size == "") {
+    return true;
+  }
+  for (const product of PRODUCT) {
+    if (product.productFlavour != flavour) continue;
+    if (product.productSize.includes(size)) {
+      return true;
+    }
+  }
+  return false;
+}
 
-export const LOCATION: string[] = [
-  "Brookfield",
-  "Forest Hill",
-  "Macpherson",
-  "Queen West",
-  "St. Clair", 
-  "Union Station", 
-  "Home Delivery",
-  "Amazon",
-  "Nashua",
-  "Customer Service (Grocery / Non-Greenhouse Retail Store)"
-]
+export const filterSize = (flavour: string, size: string) : boolean => {
+  if (flavour == "") {
+    return true;
+  }
+  for (const product of PRODUCT) {
+    if (product.productFlavour != flavour) continue;
+    if (product.productSize.includes(size)) {
+      return true;
+    }
+  }
+  console.log("false");
+  return false;
+}

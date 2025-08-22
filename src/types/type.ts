@@ -1,42 +1,51 @@
 
 
-export type FormInputFieldType = {
+export type FormInputField_Type = {
   label: string,
   name: string,
   type: string,
-  placeholder: string,
-  readonly: boolean
 }
 
-export type FormInputFieldObjectType = {
-  name: FormInputFieldType,
-  location: FormInputFieldType,
-  locationDetail: FormInputFieldType,
-  customerName: FormInputFieldType,
-  bestBeforeDate: FormInputFieldType,
-  productSize: FormInputFieldType,
-  productFlavour: FormInputFieldType,
-  productName: FormInputFieldType,
-  issue: FormInputFieldType,
-  issueDetail: FormInputFieldType 
+export type FormInputFieldObject_Type = {
+  customerName: FormInputField_Type,
+  location: FormInputField_Type,
+  productFlavour: FormInputField_Type,
+  productSize: FormInputField_Type,
+  bestBeforeDate: FormInputField_Type,
+  complaintType: FormInputField_Type,
+  complaintTypeDetails: FormInputField_Type,
+  healthConcern: FormInputField_Type,
+  issue: FormInputField_Type,
+  issueDetails: FormInputField_Type,
+  sampleHeld: FormInputField_Type,
+  response: FormInputField_Type,
+  followUpRequired: FormInputField_Type,
+  additionalNotes: FormInputField_Type
 }
 
-export type FormInputDataType = {
-  name: string,
-  location: string,
-  locationDetail: string,
-  customerName: string,
-  bestBeforeDate: string, // change to date later
-  productSize: string,
+export type FormInputProduct_Type = {
   productFlavour: string,
-  productName: string,
-  issue: string,
-  issueDetail: string
+  productSize: string,
+  bestBeforeDate: string
 }
 
-export type FormInputOptionType = {
+export type FormInputData_Type = {
+  customerName: string,
+  location: string,
+  product: FormInputProduct_Type[],
+  complaintType: string,
+  complaintTypeDetails: string,
+  healthConcern: string,
+  issue: string,
+  issueDetails: string,
+  sampleHeld: string,
+  response: string,
+  followUpRequired: string,
+  additionalNotes: string
+}
+
+export type FormInputOption_Type = {
   value: string,
   label: string,
-  color: string
 }
 
