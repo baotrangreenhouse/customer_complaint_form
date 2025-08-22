@@ -12,6 +12,7 @@ export type FormInputFieldObject_Type = {
   productFlavour: FormInputField_Type,
   productSize: FormInputField_Type,
   bestBeforeDate: FormInputField_Type,
+  affectedUnit: FormInputField_Type,
   complaintType: FormInputField_Type,
   complaintTypeDetails: FormInputField_Type,
   healthConcern: FormInputField_Type,
@@ -26,7 +27,8 @@ export type FormInputFieldObject_Type = {
 export type FormInputProduct_Type = {
   productFlavour: string,
   productSize: string,
-  bestBeforeDate: string
+  bestBeforeDate: string,
+  affectedUnit: string
 }
 
 export type FormInputData_Type = {

@@ -13,6 +13,8 @@
   --grey-color: #A1A1AA;
   --black-color: #1E1E24;
   --pink-color: #FB9F89;
+  --red-color: #E94057;
+  --orange-color: #ec5e06;
   --khaki-color: #D5C7B8;
   --blue-color: #81AE9D;
   --green-color: #21A179;
@@ -48,12 +50,16 @@
     @apply grid grid-cols-[minmax(40px,1fr)_minmax(auto,708px)_minmax(40px,1fr)] sm:grid-cols-[minmax(96px,1fr)_minmax(auto,708px)_minmax(96px,1fr)];
   }
   .input--box {
-    @apply block w-full rounded-lg bg-[white] border-2 border-[var(--grey-color)] hover:border-[var(--black-color)] focus:border-[var(--black-color)] transition-colors ease-linear placeholder:text-[var(--grey-color)] appearance-none focus:outline-none;
+    @apply block w-full rounded-lg bg-[white] border-2 border-[var(--grey-color)] hover:border-[var(--light-blue-color)] focus:border-[var(--light-blue-color)] transition-colors ease-linear placeholder:text-[var(--grey-color)] appearance-none focus:outline-none;
   }
   .input--line {
     @apply block w-full bg-inherit border-b-2 focus:border-b-[var(--black-color)] transition-colors ease-linear placeholder:text-[var(--grey-color)] appearance-none focus:outline-none;
   }
-  
+
+  .hover--scale--transition--button {
+    @apply hover:scale-110 transition-transform ease-in duration-300;
+  }
+
   .box--shadow {
     box-shadow: 0 6px 28px 0 rgba(0, 0, 0, 0.1), 0 2px 4px 0 rgba(0, 0, 0, 0.2);
   }

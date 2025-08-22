@@ -80,7 +80,7 @@ export const PRODUCT: ProductObject_Type[] = RAW_PRODUCT.map(product => {
 });
 
 export const FLAVOUR: string[] = PRODUCT.map((product) => product.productFlavour);
-export const SIZE: string[] = ["60 mL", "300 mL", "325 mL", "340 mL", "355 mL", "900 mL", "946 mL", "1.26 mL"];
+export const SIZE: string[] = ["60 mL", "300 mL", "325 mL", "340 mL", "355 mL", "900 mL", "946 mL", "1.26 L"];
 
 export const LOCATION: string[] = [
   "Brookfield",

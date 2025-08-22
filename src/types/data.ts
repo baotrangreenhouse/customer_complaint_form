@@ -27,6 +27,11 @@ export const FormInputFieldObject: FormInputFieldObject_Type = {
     name: "bestBeforeDate",
     type: "date"
   },
+  affectedUnit: { // input box
+    label: "Number of Affected Unit",
+    name: "affectedUnit",
+    type: "number"
+  },
   complaintType: { // select customer complaint / store complaint
     label: "Complaint Type",
     name: "complaintType",

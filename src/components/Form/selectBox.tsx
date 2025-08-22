@@ -18,7 +18,7 @@ interface Props {
 type Color = chroma.Color;
 const colourStyles: StylesConfig<FormInputOption_Type> = {
   control: (styles, { isFocused }) => ({
-    ...styles, backgroundColor: 'white', borderWidth: '2px', ':hover': { borderColor: '#1E1E24' }, borderColor: isFocused ? '#1E1E24' : '#A1A1AA', outline: 'none', borderRadius: '0.5rem', boxShadow: ''
+    ...styles, backgroundColor: "white", borderWidth: "2px", ":hover": { borderColor: "#54b3d6" }, borderColor: isFocused ? "#54b3d6" : "#A1A1AA", outline: "none", borderRadius: "0.5rem", boxShadow: ""
   }),
   option: (styles, { isFocused, isSelected }) => {
     const defaultColor = "#37352F";
