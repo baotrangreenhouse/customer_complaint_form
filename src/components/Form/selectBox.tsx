@@ -1,12 +1,10 @@
-'use client'
 import { FormInputOption_Type } from "@/types/type";
 import chroma from "chroma-js";
-import { useState } from "react";
-import { SingleValue, StylesConfig } from "react-select";
+import { MultiValue, SingleValue, StylesConfig } from "react-select";
 import Select from "react-select";
 
 
-interface Props {
+interface SelectBoxProps {
   label: string,
   name: string,
   options?: FormInputOption_Type[],
@@ -47,16 +45,11 @@ const colourStyles: StylesConfig<FormInputOption_Type> = {
   }
 };
 
-const SelectBox = (props: Props) => {
-  const {options, label, name, onChange} = props;
-
-  const [selectedOption, setSelectedOption] = useState<SingleValue<FormInputOption_Type>>();
-
+const SelectBox = (props: SelectBoxProps) => {
+  const {options, label, name, value, onChange} = props;
   const handleSelectChange = (selectedOption: SingleValue<FormInputOption_Type>) => {
-    setSelectedOption(selectedOption);
-    onChange(name, selectedOption?.value);
+    onChange(name, selectedOption?.value ?? "");
   }
-
   return (
     options && (
       <div>
@@ -71,7 +64,7 @@ const SelectBox = (props: Props) => {
           options={options}
           styles={colourStyles}
           className="text--content"
-          value={selectedOption}
+          value={options.find((o) => o.value === value) ?? null}
           onChange={(s) => handleSelectChange(s)}
           isMulti={false}
           isClearable={true}
@@ -80,5 +73,44 @@ const SelectBox = (props: Props) => {
     )
   )
 }
-
 export default SelectBox;
+
+interface MultiSelectBoxProps {
+  label: string,
+  name: string,
+  options?: FormInputOption_Type[],
+  type: string,
+  value: string[],
+  onChange: Function,
+}
+
+const MultiSelectBox = (props: MultiSelectBoxProps) => {
+  const {options, label, name, value, onChange} = props;
+  const handleSelectChange = (selectedOptions: MultiValue<FormInputOption_Type>) => {
+    const values: string[] = selectedOptions.map((option) => option.value);
+    onChange(name, values);
+  }
+  return (
+    options && (
+      <div>
+        <label
+          htmlFor={name}
+          className="text-black text-sm font-medium block mb-2"
+        >
+          {label}
+        </label>
+        <Select
+          instanceId={name}
+          options={options}
+          styles={colourStyles}
+          className="text--content"
+          value={options.filter((o) => value?.includes(o.value))}
+          onChange={(s) => handleSelectChange(s)}
+          isMulti={true}
+          isClearable={true}
+        />
+      </div>
+    )
+  )
+}
+export {MultiSelectBox};

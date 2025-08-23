@@ -47,6 +47,11 @@ export const FormInputFieldObject: FormInputFieldObject_Type = {
     name: "healthConcern",
     type: "text"
   },
+  healthConcernDetails: {
+    label: "Health Concern Details",
+    name: "healthConcernDetails",
+    type: "text"
+  },
   issue: { // multi select
     label: "Issue",
     name: "issue",

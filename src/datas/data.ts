@@ -95,6 +95,10 @@ export const LOCATION: string[] = [
   "Customer Service (Grocery / Non-Greenhouse Retail Store)"
 ]
 
+export const COMPLAINT_TYPE: string[] = ["Customer Complaint", "Store Complaint"]
+export const YES_NO: string[] = ["Yes", "No"]
+// export const ISSUE: string[] =;
+// export const 
 
 
 
