@@ -97,29 +97,28 @@ export const LOCATION: string[] = [
 
 export const COMPLAINT_TYPE: string[] = ["Customer Complaint", "Store Complaint"]
 export const YES_NO: string[] = ["Yes", "No"]
-// export const ISSUE: string[] =;
-// export const 
-
+export const ISSUE: string[] = [
+  "Smells Off / Rancid",
+  "Smells Sour / Fermented",
+  "Foreign Material",
+  "Packaging (broken seals, broken glass, caps, etc)",
+  "Packaging (bloated carton, leaking carton, etc",
+  "Taste Variance (sour, tastes off, etc)",
+  "Visual Appearance (colour variance, curdling, etc)",
+  "Mold (on cap, bottle neck)",
+  "Milk / Shake - Curdling, Separation"
+]
+export const RESPONSE_ACTION: string[] = [
+  "Customer Refunded",
+  "Product Replaced",
+  "Not Applicable (not a customer complaint)"
+]
 
 
 export const convertToOption = (values: string[]) : FormInputOption_Type[] => {
   return values.map((value: string) => {
     return {value: value, label: value}; 
   })
-}
-
-export const getFlavour = (products: ProductObjectType[]) : string[] => {
-  return [... new Set(products.map(productObject => {
-    return productObject.productFlavour;
-  }))];
-}
-
-export const getSize = (products: ProductObjectType[]) : string[] => {
-  var size: string[] = [];
-  for (var i = 0; i < products.length; ++i) {
-    size = size.concat(products[i].productSize);
-  }
-  return [... new Set(size)];
 }
 
 export const filterFlavour = (flavour: string, size: string) : boolean => {
@@ -145,6 +144,7 @@ export const filterSize = (flavour: string, size: string) : boolean => {
       return true;
     }
   }
-  console.log("false");
   return false;
 }
+
+

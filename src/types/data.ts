@@ -25,7 +25,7 @@ export const FormInputFieldObject: FormInputFieldObject_Type = {
   bestBeforeDate: { // input box
     label: "Best Before Date (BBD)",
     name: "bestBeforeDate",
-    type: "date"
+    type: "datetime-local"
   },
   affectedUnit: { // input box
     label: "Number of Affected Unit",

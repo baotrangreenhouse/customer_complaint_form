@@ -88,6 +88,7 @@ const MultiSelectBox = (props: MultiSelectBoxProps) => {
   const {options, label, name, value, onChange} = props;
   const handleSelectChange = (selectedOptions: MultiValue<FormInputOption_Type>) => {
     const values: string[] = selectedOptions.map((option) => option.value);
+    console.log(values);
     onChange(name, values);
   }
   return (

@@ -40,7 +40,7 @@ export type FormInputData_Type = {
   complaintTypeDetails: string,
   healthConcern: string,
   healthConcernDetails: string,
-  issue: string,
+  issue: string[],
   issueDetails: string,
   sampleHeld: string,
   response: string,
