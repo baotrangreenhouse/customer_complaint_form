@@ -8,7 +8,6 @@ import { COMPLAINT_TYPE, FLAVOUR, ISSUE, LOCATION, RESPONSE_ACTION, SIZE, YES_NO
 import InputBox from "./inputBox";
 import Button from "../Button/button";
 import { PlusIcon, TrashIcon } from "../Icon/icon";
-import Line from "./line";
 import TextArea from "./textArea";
 
 const FormInputDataProductDefault: FormInputProduct_Type = {
@@ -111,8 +110,12 @@ const FormSection = () => {
   }
   return (
     <form className="flex flex-col w-full space-y-3">
+      <Header text="1. Information" />
       <InputBox {...FormInputFieldObject.customerName} value={inputData.customerName} onChange={handleInputBoxChange} />
       <SelectBox {...FormInputFieldObject.location} options={FormInputOption_Location} value={inputData.location} onChange={handleSelectBoxChangeWrapper} />
+
+      <Line />
+      <Header text="2. Product" />
       {inputData.product.map((product: FormInputProduct_Type, index: number) => {
         const handleInputBoxChange_Product = (event: FormEvent<HTMLFormElement>) => {
           // handle change for bestBeforeDate, affectedUnit
@@ -145,7 +148,7 @@ const FormSection = () => {
         }
         return (
           <div key={index} className="flex flex-col w-full space-y-3">
-            <Line />
+            <SubHeader text={`Product ${index + 1}`} />
             <SelectBox {...FormInputFieldObject.productFlavour} options={FormInputOption_ProductFlavour[index]} value={product.productFlavour} onChange={handleSelectBoxChangeWrapper_Product} />
             <SelectBox {...FormInputFieldObject.productSize} options={FormInputOption_ProductSize[index]} value={product.productSize} onChange={handleSelectBoxChangeWrapper_Product} />
             <div className="grid grid-cols-2 gap-2">
@@ -168,37 +171,25 @@ const FormSection = () => {
         )
       })
       }
-      <Line />
 
+      <Line />
+      <Header text="3. Details" />
       <SelectBox {...FormInputFieldObject.complaintType} options={FormInputOption_ComplaintType} value={inputData.complaintType} onChange={handleSelectBoxChangeWrapper} />
       <TextArea {...FormInputFieldObject.complaintTypeDetails} value={inputData.complaintTypeDetails} onChange={handleInputBoxChange} />
-
-      <Line />
-
       <SelectBox {...FormInputFieldObject.healthConcern} options={FormInputOption_YesNo} value={inputData.healthConcern} onChange={handleSelectBoxChangeWrapper} />
       <TextArea {...FormInputFieldObject.healthConcernDetails} value={inputData.healthConcernDetails} onChange={handleInputBoxChange} />
-
-      <Line />
-
       <MultiSelectBox {...FormInputFieldObject.issue} options={FormInputOption_Issue} value={inputData.issue} onChange={handleMultiSelectBoxChangeWrapper} />
       <TextArea {...FormInputFieldObject.issueDetails} value={inputData.issueDetails} onChange={handleInputBoxChange} />
 
       <Line />
-
+      <Header text="4. Other" />
       <SelectBox {...FormInputFieldObject.sampleHeld} options={FormInputOption_YesNo} value={inputData.sampleHeld} onChange={handleSelectBoxChangeWrapper} />
-
-      <Line />
-
-      <SelectBox {...FormInputFieldObject.response} options={FormInputOption_Response} value={inputData.response} onChange={handleSelectBoxChangeWrapper} />
-      
-      <Line />
-
+      <SelectBox {...FormInputFieldObject.response} options={FormInputOption_Response} value={inputData.response} onChange={handleSelectBoxChangeWrapper} />  
       <SelectBox {...FormInputFieldObject.followUpRequired} options={FormInputOption_YesNo} value={inputData.followUpRequired} onChange={handleSelectBoxChangeWrapper} />
-
       <TextArea {...FormInputFieldObject.additionalNotes} value={inputData.additionalNotes} onChange={handleInputBoxChange} />
 
       <Button className="bg-[var(--pale-green-color)] w-full" onClick={handleSubmit}>
-        <span className="text-white block h-fit w-fit p-1.5">
+        <span className="text-white text--sub--small font-medium block h-fit w-fit p-1.5">
           Submit
         </span>
       </Button>
@@ -207,3 +198,29 @@ const FormSection = () => {
 }
 
 export default FormSection;
+
+const Line = () => {
+  return (
+    <div className="w-full h-0.5 bg-[var(--black-color)] mt-2" />
+  )
+}
+
+interface HeaderProps {
+  text: string
+}
+const Header = ({text}: HeaderProps) => {
+  return (
+    <div className="text-[var(--black-color)] text--sub--header">
+      {text}
+    </div>
+  )
+}
+
+const SubHeader = ({text}: HeaderProps) => {
+  return (
+    <div className="text-[var(--black-color)] text--content">
+      {text}
+    </div>
+  )
+}
+

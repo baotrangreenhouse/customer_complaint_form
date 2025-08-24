@@ -55,7 +55,7 @@ const SelectBox = (props: SelectBoxProps) => {
       <div>
         <label
           htmlFor={name}
-          className="text-black text-sm font-medium block mb-2"
+          className="text-[var(--black-color)] text-sm font-medium block mb-2"
         >
           {label}
         </label>
@@ -96,7 +96,7 @@ const MultiSelectBox = (props: MultiSelectBoxProps) => {
       <div>
         <label
           htmlFor={name}
-          className="text-black text-sm font-medium block mb-2"
+          className="text-[var(--black-color)] text-sm font-medium block mb-2"
         >
           {label}
         </label>

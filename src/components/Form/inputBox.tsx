@@ -14,14 +14,14 @@ const InputBox = (props : Props) => {
     <div>
       <label
         htmlFor={name}
-        className="text-black text-sm font-medium block mb-2"
+        className="text-[var(--black-color)] text-sm font-medium block mb-2"
       >
         {label}
       </label>
       <input
         name={name}
         type={type}
-        className="text--content text-black input--box p-1.5"
+        className="text-[var(--black-color)] text--content input--box p-1.5"
         value={value}
         onChange={(e) => onChange(e)}
         autoComplete="off"
