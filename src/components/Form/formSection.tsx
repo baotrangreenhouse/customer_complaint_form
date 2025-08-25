@@ -9,6 +9,7 @@ import InputBox from "./inputBox";
 import Button from "../Button/button";
 import { PlusIcon, TrashIcon } from "../Icon/icon";
 import TextArea from "./textArea";
+import { submitForm } from "@/app/actions/submitForm";
 
 const FormInputDataProductDefault: FormInputProduct_Type = {
   productFlavour: "", productSize: "", bestBeforeDate: "", affectedUnit: "1"
@@ -92,7 +93,6 @@ const FormSection = () => {
     setFormInputOption_ProductSize(newSizeOption);
   }
   const handleClickRemoveProduct = (index: number) => {
-    console.log(index);
     // delete product
     const newProduct: FormInputProduct_Type[] = inputData.product.filter((_, i) => i !== index);
     setInputData({
@@ -106,9 +106,11 @@ const FormSection = () => {
     setFormInputOption_ProductSize(newSizeOption);
   }
 
-  const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     console.log(inputData);
+
+    await submitForm(inputData);
   }
   return (
     <form className="flex flex-col w-full space-y-3" onSubmit={(e) => handleSubmit(e)}>
