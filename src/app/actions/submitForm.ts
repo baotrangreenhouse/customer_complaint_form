@@ -1,13 +1,12 @@
 "use server"
-import { FormInputData_Type } from "@/types/type";
+import { API_Response_Type, FormInputData_Type, FormInputProduct_Type } from "@/types/type";
 import supabase from "@/lib/supabaseClient";
 
 const customer_complaint_table: string = "customer_complaint";
+const customer_complaint_product_table: string = "customer_complaint_product";
 
-export const submitForm = async (inputData: FormInputData_Type) => {
-  console.log("supabase", supabase);
-
-  const {data, error} = await supabase
+export const submitForm = async (inputData: FormInputData_Type) : Promise<API_Response_Type> => {
+  const {status, data, error} = await supabase
     .from(customer_complaint_table)
     .insert([
       {
@@ -25,7 +24,22 @@ export const submitForm = async (inputData: FormInputData_Type) => {
         additional_notes: inputData.additionalNotes
       }
     ]).select();
-  console.log(data);
-  console.log(error);
+  if (!error) {
+    const {status, error} = await supabase
+      .from(customer_complaint_product_table)
+      .insert(
+        inputData.product.map((product: FormInputProduct_Type) => {
+          return {
+            complaint_id: data[0].id,
+            product_flavour: product.productFlavour,
+            product_size: product.productSize,
+            affected_unit: product.affectedUnit,
+            best_before_date: product.bestBeforeDate
+          }
+        })
+      );
+    return {status, data: [], error};
+  }
+  return {status, data: [], error};
 }
 

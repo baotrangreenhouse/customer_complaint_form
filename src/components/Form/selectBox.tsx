@@ -1,3 +1,5 @@
+import { cn } from "@/lib/tailwind-merge";
+import { FormInputFieldRequired } from "@/types/data";
 import { FormInputOption_Type } from "@/types/type";
 import chroma from "chroma-js";
 import { MultiValue, SingleValue, StylesConfig } from "react-select";
@@ -10,13 +12,14 @@ interface SelectBoxProps {
   options?: FormInputOption_Type[],
   type: string,
   value: string,
-  onChange: Function,
+  isError: boolean,
+  onChange: Function
 }
 
 type Color = chroma.Color;
 const colourStyles: StylesConfig<FormInputOption_Type> = {
-  control: (styles, { isFocused }) => ({
-    ...styles, backgroundColor: "white", borderWidth: "2px", ":hover": { borderColor: "#54b3d6" }, borderColor: isFocused ? "#54b3d6" : "#A1A1AA", outline: "none", borderRadius: "0.5rem", boxShadow: ""
+  control: (styles, {isFocused}) => ({
+    ...styles, backgroundColor: "white", borderWidth: "2px", ":hover": { borderColor: "#54b3d6" }, borderColor: isFocused ? "#54b3d6" : "inherit", outline: "none", borderRadius: "0.5rem", boxShadow: ""
   }),
   option: (styles, { isFocused, isSelected }) => {
     const defaultColor = "#37352F";
@@ -46,7 +49,8 @@ const colourStyles: StylesConfig<FormInputOption_Type> = {
 };
 
 const SelectBox = (props: SelectBoxProps) => {
-  const {options, label, name, value, onChange} = props;
+  const {options, label, name, value, isError, onChange} = props;
+  const isErrorCurrent: boolean = isError && FormInputFieldRequired.includes(name) && !value;
   const handleSelectChange = (selectedOption: SingleValue<FormInputOption_Type>) => {
     onChange(name, selectedOption?.value ?? "");
   }
@@ -63,7 +67,7 @@ const SelectBox = (props: SelectBoxProps) => {
           instanceId={name}
           options={options}
           styles={colourStyles}
-          className="text--content"
+          className={cn("text--content", isErrorCurrent ? "border-[var(--red-color)]" : "border-[var(--grey-color)]")}
           value={options.find((o) => o.value === value) ?? null}
           onChange={(s) => handleSelectChange(s)}
           isMulti={false}
@@ -81,14 +85,15 @@ interface MultiSelectBoxProps {
   options?: FormInputOption_Type[],
   type: string,
   value: string[],
-  onChange: Function,
+  isError: boolean,
+  onChange: Function
 }
 
 const MultiSelectBox = (props: MultiSelectBoxProps) => {
-  const {options, label, name, value, onChange} = props;
+  const {options, label, name, value, isError, onChange} = props;
+  const isErrorCurrent: boolean = isError && FormInputFieldRequired.includes(name) && !value.length;
   const handleSelectChange = (selectedOptions: MultiValue<FormInputOption_Type>) => {
     const values: string[] = selectedOptions.map((option) => option.value);
-    console.log(values);
     onChange(name, values);
   }
   return (
@@ -104,7 +109,7 @@ const MultiSelectBox = (props: MultiSelectBoxProps) => {
           instanceId={name}
           options={options}
           styles={colourStyles}
-          className="text--content"
+          className={cn("text--content", isErrorCurrent ? "border-[var(--red-color)]" : "border-[var(--grey-color)]")}
           value={options.filter((o) => value?.includes(o.value))}
           onChange={(s) => handleSelectChange(s)}
           isMulti={true}

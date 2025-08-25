@@ -1,5 +1,4 @@
 import { FormInputOption_Type } from "@/types/type";
-import { ProductObject_Type } from "./type";
 
 const RAW_PRODUCT: string[] = [
 "Adaptogenic Cafe Latte, 300 mL", // lattes
@@ -71,6 +70,11 @@ const RAW_PRODUCT: string[] = [
 "Power-Up Mushroom, 60 mL",
 "Smart Energy, 60 mL"
 ];
+
+type ProductObject_Type = {
+  productFlavour: string,
+  productSize: string[]
+}
 
 export const PRODUCT: ProductObject_Type[] = RAW_PRODUCT.map(product => {
   const s = product.split(", ");
@@ -146,5 +150,7 @@ export const filterSize = (flavour: string, size: string) : boolean => {
   }
   return false;
 }
+
+
 
 

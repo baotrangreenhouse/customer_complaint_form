@@ -1,4 +1,4 @@
-import { FormInputFieldObject_Type } from "./type";
+import { FormInputData_Type, FormInputFieldObject_Type } from "./type";
 
 
 export const FormInputFieldObject: FormInputFieldObject_Type = {
@@ -82,5 +82,19 @@ export const FormInputFieldObject: FormInputFieldObject_Type = {
     name: "additionalNotes",
     type: "text"
   }
-}
+};
 
+export const FormInputFieldRequired: string[] = [
+  "customerName",
+  "location",
+  "productFlavour",
+  "productSize",
+  "affectedUnit",
+  "bestBeforeDate",
+  "complaintType",
+  "healthConcern",
+  "issue",
+  "sampleHeld",
+  "response",
+  "followUpRequired",
+];

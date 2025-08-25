@@ -1,3 +1,5 @@
+import { cn } from "@/lib/tailwind-merge";
+import { FormInputFieldRequired } from "@/types/data";
 
 
 interface Props {
@@ -5,12 +7,13 @@ interface Props {
   name: string,
   type: string,
   value: string,
+  isError: boolean,
   onChange: Function,
 }
 
 const TextArea = (props : Props) => {
-  const {label, name, type, value, onChange} = props;
-
+  const {label, name, type, value, isError, onChange} = props;
+  const isErrorCurrent: boolean = isError && FormInputFieldRequired.includes(name) && !value;
   return (
     <div>
       <label
@@ -21,7 +24,7 @@ const TextArea = (props : Props) => {
       </label>
       <textarea
         name={name}
-        className="text--content text-[var(--black-color)] input--box p-1.5"
+        className={cn("text--content text-[var(--black-color)] input--box p-1.5", isErrorCurrent ? "border-[var(--red-color)]" : "")}
         value={value}
         onChange={(e) => onChange(e)}
         autoComplete="off"

@@ -28,8 +28,8 @@ export type FormInputFieldObject_Type = {
 export type FormInputProduct_Type = {
   productFlavour: string,
   productSize: string,
+  affectedUnit: string,
   bestBeforeDate: string,
-  affectedUnit: string
 }
 
 export type FormInputData_Type = {
@@ -48,8 +48,15 @@ export type FormInputData_Type = {
   additionalNotes: string
 }
 
+
 export type FormInputOption_Type = {
   value: string,
   label: string,
 }
 
+
+export type API_Response_Type = {
+  status: Number,
+  data: FormInputData_Type[],
+  error: Object | null
+}
