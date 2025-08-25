@@ -79,7 +79,7 @@ export const FormInputFieldObject: FormInputFieldObject_Type = {
   },
   additionalNotes: { // text area
     label: "Additional Notes",
-    name: "Additional Notes",
+    name: "additionalNotes",
     type: "text"
   }
 }

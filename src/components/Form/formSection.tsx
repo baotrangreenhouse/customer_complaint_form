@@ -106,7 +106,7 @@ const FormSection = () => {
   }
 
   const handleSubmit = () => {
-
+    console.log(inputData);
   }
   return (
     <form className="flex flex-col w-full space-y-3">
@@ -136,15 +136,12 @@ const FormSection = () => {
             product: newProduct  
           })
           // handle option
-          // flavour
           var newFlavourOption: FormInputOption_Type[][] = FormInputOption_ProductFlavour;
           newFlavourOption[index] = convertToOption(FLAVOUR.filter((flavour: string) => filterFlavour(flavour, product.productSize)));
           setFormInputOption_ProductFlavour(newFlavourOption);
-          // size
           var newSizeOption: FormInputOption_Type[][] = FormInputOption_ProductSize;
           newSizeOption[index] = convertToOption(SIZE.filter((size: string) => filterSize(product.productFlavour, size)))
           setFormInputOption_ProductSize(newSizeOption);
-          console.log(inputData, selectedOptionData);
         }
         return (
           <div key={index} className="flex flex-col w-full space-y-3">
