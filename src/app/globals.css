@@ -5,10 +5,11 @@
 @tailwind utilities;
 
 :root {
-  --background-white-color: white;
+  --background-white-color: #ffffff;
   --background-grey-color: #f5f4f5;
-  --text-grey-color: #37352F;
-  --box-grey-color: #e7e7e76b;
+  --background-pale-green-color: #cdceb0;
+  --text-grey-color: #37352F; 
+  --box-grey-color: #e7e7e76b; /* #e7e7e76b */
   
   --grey-color: #A1A1AA;
   --black-color: #1E1E24;

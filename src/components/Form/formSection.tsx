@@ -92,6 +92,7 @@ const FormSection = () => {
     setFormInputOption_ProductSize(newSizeOption);
   }
   const handleClickRemoveProduct = (index: number) => {
+    console.log(index);
     // delete product
     const newProduct: FormInputProduct_Type[] = inputData.product.filter((_, i) => i !== index);
     setInputData({

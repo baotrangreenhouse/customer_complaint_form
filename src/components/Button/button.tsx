@@ -16,8 +16,11 @@ const Button = ({children, type, className, onClick, index}: Props) => {
       type={type}
       className={cn(`h-fit w-fit rounded-lg shadow-inner hover:brightness-125 place-items-center`, className)}
       onClick={(e) => {
-        if (index) return onClick(index);
-        onClick(e);
+        if (index !== undefined) {
+          onClick(index);
+        } else {
+          onClick(e);
+        }
       }}
     >
       {children}
