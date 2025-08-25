@@ -15,3 +15,11 @@ export const TrashIcon = () => {
     </svg>
   )
 }
+
+export const GreenhouseIcon = () => {
+  return (
+    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 39.75 32.69" strokeWidth={1.5} stroke="currentColor" className="size-6">
+      <path strokeLinecap="round" strokeLinejoin="round" d="m26.31 32.07v-20.31l6.42-11.19 6.42 11.19v20.31h-38.54v-20.31l6.42-11.19 6.42 11.19v20.31m25.7-20.31-6.42-11.19h-25.69l-6.43 11.19z" />
+    </svg>
+  )
+}
