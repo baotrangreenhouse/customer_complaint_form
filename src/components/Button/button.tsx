@@ -4,17 +4,21 @@ import { ReactNode } from "react";
 
 interface Props {
   children: ReactNode,
+  type: "submit" | "button",
   className: string,
   onClick: Function,
   index?: number
 }
 
-const Button = ({children, className, onClick, index}: Props) => {
+const Button = ({children, type, className, onClick, index}: Props) => {
   return (
     <button
-      type="button"
+      type={type}
       className={cn(`h-fit w-fit rounded-lg shadow-inner hover:brightness-125 place-items-center`, className)}
-      onClick={(e) => onClick(index)}
+      onClick={(e) => {
+        if (index) return onClick(index);
+        onClick(e);
+      }}
     >
       {children}
     </button>

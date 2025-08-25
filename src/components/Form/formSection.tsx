@@ -105,11 +105,12 @@ const FormSection = () => {
     setFormInputOption_ProductSize(newSizeOption);
   }
 
-  const handleSubmit = () => {
+  const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
     console.log(inputData);
   }
   return (
-    <form className="flex flex-col w-full space-y-3">
+    <form className="flex flex-col w-full space-y-3" onSubmit={(e) => handleSubmit(e)}>
       <Header text="1. Information" />
       <InputBox {...FormInputFieldObject.customerName} value={inputData.customerName} onChange={handleInputBoxChange} />
       <SelectBox {...FormInputFieldObject.location} options={FormInputOption_Location} value={inputData.location} onChange={handleSelectBoxChangeWrapper} />
@@ -153,12 +154,12 @@ const FormSection = () => {
               <InputBox {...FormInputFieldObject.bestBeforeDate} value={product.bestBeforeDate} onChange={handleInputBoxChange_Product} />
             </div>
             <div className="flex flex-row space-x-2">
-              <Button className="bg-[var(--dark-green-color)]" onClick={handleClickAddProduct} index={index}>
+              <Button type="button" className="bg-[var(--dark-green-color)]" onClick={handleClickAddProduct} index={index}>
                 <span className="text-white block h-fit w-fit p-1.5">
                   <PlusIcon />
                 </span>
               </Button>
-              <Button className="bg-[var(--red-color)]" onClick={handleClickRemoveProduct} index={index}>
+              <Button type="button" className="bg-[var(--red-color)]" onClick={handleClickRemoveProduct} index={index}>
                 <span className="text-white block h-fit w-fit p-1.5">
                   <TrashIcon />
                 </span>
@@ -185,7 +186,7 @@ const FormSection = () => {
       <SelectBox {...FormInputFieldObject.followUpRequired} options={FormInputOption_YesNo} value={inputData.followUpRequired} onChange={handleSelectBoxChangeWrapper} />
       <TextArea {...FormInputFieldObject.additionalNotes} value={inputData.additionalNotes} onChange={handleInputBoxChange} />
 
-      <Button className="bg-[var(--pale-green-color)] w-full" onClick={handleSubmit}>
+      <Button type="submit" className="bg-[var(--pale-green-color)] w-full" onClick={handleSubmit}>
         <span className="text-white text--sub--small font-medium block h-fit w-fit p-1.5">
           Submit
         </span>
