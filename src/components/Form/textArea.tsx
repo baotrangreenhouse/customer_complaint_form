@@ -13,7 +13,8 @@ interface Props {
 
 const TextArea = (props : Props) => {
   const {label, name, type, value, isError, onChange} = props;
-  const isErrorCurrent: boolean = isError && FormInputFieldRequired.includes(name) && !value;
+  const isRequired: boolean = FormInputFieldRequired.includes(name);
+  const isErrorCurrent: boolean = isError && isRequired && !value;
   return (
     <div>
       <label
@@ -21,6 +22,11 @@ const TextArea = (props : Props) => {
         className="text-[var(--black-color)] text-sm font-medium block mb-2"
       >
         {label}
+        {isRequired && (
+          <span className="text-sm text-[var(--red-color)]">
+            *
+          </span>
+        )}
       </label>
       <textarea
         name={name}

@@ -7,9 +7,14 @@ export const FormInputFieldObject: FormInputFieldObject_Type = {
     name: "customerName",
     type: "text"
   },
-  location: { // input box
+  location: { // select
     label: "Location",
     name: "location",
+    type: "text"
+  },
+  locationCustomerService: { // select
+    label: "Location Customer Service",
+    name: "locationCustomerService",
     type: "text"
   },
   productFlavour: { // select
@@ -87,6 +92,7 @@ export const FormInputFieldObject: FormInputFieldObject_Type = {
 export const FormInputFieldRequired: string[] = [
   "customerName",
   "location",
+  "locationCustomerService",
   "productFlavour",
   "productSize",
   "affectedUnit",

@@ -9,6 +9,7 @@ export type FormInputField_Type = {
 export type FormInputFieldObject_Type = {
   customerName: FormInputField_Type,
   location: FormInputField_Type,
+  locationCustomerService: FormInputField_Type,
   productFlavour: FormInputField_Type,
   productSize: FormInputField_Type,
   bestBeforeDate: FormInputField_Type,
@@ -35,6 +36,7 @@ export type FormInputProduct_Type = {
 export type FormInputData_Type = {
   customerName: string,
   location: string,
+  locationCustomerService: string,
   product: FormInputProduct_Type[],
   complaintType: string,
   complaintTypeDetails: string,
@@ -55,8 +57,9 @@ export type FormInputOption_Type = {
 }
 
 
+
 export type API_Response_Type = {
   status: Number,
   data: FormInputData_Type[],
-  error: Object | null
+  error: any 
 }

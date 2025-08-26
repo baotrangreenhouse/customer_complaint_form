@@ -1,10 +1,10 @@
 "use client"
 
-import { FormEvent, useState } from "react";
+import { FormEvent, useEffect, useState } from "react";
 import { FormInputData_Type, FormInputOption_Type, FormInputProduct_Type } from "@/types/type";
 import { FormInputFieldObject, FormInputFieldRequired } from "@/types/data";
 import SelectBox, { MultiSelectBox } from "./selectBox";
-import { COMPLAINT_TYPE, FLAVOUR, ISSUE, LOCATION, PRODUCT, RESPONSE_ACTION, SIZE, YES_NO, convertToOption, filterFlavour, filterSize} from "@/datas/data";
+import { COMPLAINT_TYPE, FLAVOUR, ISSUE, LOCATION, LOCATION_CUSTOMER_SERVICE, PRODUCT, RESPONSE_ACTION, SIZE, YES_NO, convertToOption, filterFlavour, filterSize} from "@/datas/data";
 import InputBox from "./inputBox";
 import Button from "../Button/button";
 import { PlusIcon, TrashIcon } from "../Icon/icon";
@@ -17,6 +17,7 @@ const FormInputDataProductDefault: FormInputProduct_Type = {
 const FormInputDataDefault: FormInputData_Type = {
   customerName: "",
   location: "",
+  locationCustomerService: "",
   product: [{... FormInputDataProductDefault}], // copy by value
   complaintType: "",
   complaintTypeDetails: "",
@@ -30,6 +31,7 @@ const FormInputDataDefault: FormInputData_Type = {
   additionalNotes: ""
 };
 const FormInputOption_Location: FormInputOption_Type[] = convertToOption(LOCATION);
+const FormInputOption_LocationCustomerService: FormInputOption_Type[] = convertToOption(LOCATION_CUSTOMER_SERVICE);
 const FormInputOption_ComplaintType: FormInputOption_Type[] = convertToOption(COMPLAINT_TYPE);
 const FormInputOption_YesNo: FormInputOption_Type[] = convertToOption(YES_NO);
 const FormInputOption_Issue: FormInputOption_Type[] = convertToOption(ISSUE);
@@ -37,11 +39,10 @@ const FormInputOption_Response: FormInputOption_Type[] = convertToOption(RESPONS
 
 const FormSection = () => {
   const [inputData, setInputData] = useState<FormInputData_Type>(FormInputDataDefault);
-
+  const [isError, setIsError] = useState<boolean>(false);
+  const [errorMessage, setErrorMessage] = useState<string>("");
   const [FormInputOption_ProductFlavour, setFormInputOption_ProductFlavour] = useState<FormInputOption_Type[][]>([convertToOption(FLAVOUR)]);
   const [FormInputOption_ProductSize, setFormInputOption_ProductSize] = useState<FormInputOption_Type[][]>([convertToOption(SIZE)]);
-
-  const [isError, setIsError] = useState<boolean>(false);
   // handleInputBoxChange is for input box
   const handleInputBoxChange = (event: FormEvent<HTMLFormElement>) => {
     setInputData({
@@ -107,19 +108,37 @@ const FormSection = () => {
 
   const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    setIsError(checkInputData(inputData));
-    // const {status, data, error} = await submitForm(inputData);
-    
-    // if (error) {
-      
-    // }
+    // check for error in the input fields
+    const isError: boolean = checkInputData(inputData);
+    setIsError(isError);
+    if (isError) {
+      setErrorMessage("Please fill in the required fields");
+      return;
+    }
+    // post
+    const {status, data, error} = await submitForm(inputData);
+    if (!error) {
+      console.log(status, data);
+    }
+    if (error) {
+      setErrorMessage(error.message);
+    }
   }
+
+  useEffect(() => {
+    // clear error message when new input is typed in
+    // note that error message is only for saying what is an error, it does not responsible for having the input box red
+    setErrorMessage("");
+  }, [inputData])
+
   return (
     <form className="flex flex-col w-full space-y-3" onSubmit={(e) => handleSubmit(e)}>
       <Header text="1. Information" />
       <InputBox {...FormInputFieldObject.customerName} value={inputData.customerName} isError={isError} onChange={handleInputBoxChange} />
       <SelectBox {...FormInputFieldObject.location} options={FormInputOption_Location} value={inputData.location} isError={isError} onChange={handleSelectBoxChangeWrapper} />
-
+      {inputData.location === "Customer Service (Grocery / Non-Greenhouse Retail Store)" && (
+        <SelectBox {...FormInputFieldObject.locationCustomerService} options={FormInputOption_LocationCustomerService} value={inputData.locationCustomerService} isError={isError} onChange={handleMultiSelectBoxChangeWrapper} />
+      )}
       <Line />
       <Header text="2. Product" />
       {inputData.product.map((product: FormInputProduct_Type, index: number) => {
@@ -190,12 +209,19 @@ const FormSection = () => {
       <SelectBox {...FormInputFieldObject.response} options={FormInputOption_Response} value={inputData.response} isError={isError} onChange={handleSelectBoxChangeWrapper} />  
       <SelectBox {...FormInputFieldObject.followUpRequired} options={FormInputOption_YesNo} value={inputData.followUpRequired} isError={isError} onChange={handleSelectBoxChangeWrapper} />
       <TextArea {...FormInputFieldObject.additionalNotes} value={inputData.additionalNotes} isError={isError} onChange={handleInputBoxChange} />
-
-      <Button type="submit" className="bg-[var(--pale-green-color)] w-full" onClick={handleSubmit}>
-        <span className="text-white text--sub--small font-medium block h-fit w-fit p-1.5">
-          Submit
-        </span>
-      </Button>
+      
+      <div className="flex flex-col space-y-1">
+        <Button type="submit" className="bg-[var(--pale-green-color)] w-full" onClick={handleSubmit}>
+          <span className="text-white text--sub--small font-medium block h-fit w-fit p-1.5">
+            Submit
+          </span>
+        </Button>
+        {errorMessage && (
+          <div className="text-sm text-[var(--red-color)]">
+            {errorMessage}
+          </div>
+        )}
+      </div>
     </form>
   )
 }
@@ -227,22 +253,30 @@ const SubHeader = ({text}: HeaderProps) => {
   )
 }
 
-
 const checkInputData = (inputData: FormInputData_Type) : boolean => {
   var isError: boolean = false;
   type Keys = keyof FormInputData_Type;
-  FormInputFieldRequired.map((field: string) => {
+  for (const field of FormInputFieldRequired) {
     if (field === "productFlavour" || field == "productSize" || field == "affectedUnit" || field === "bestBeforeDate") {
+      // check each product
       inputData.product.forEach((product: FormInputProduct_Type) => {
         isError = isError || product.productFlavour === "" || product.productSize === "" || product.affectedUnit === "" || product.bestBeforeDate === "";
       })
+    } else if (field === "locationCustomerService" && inputData.location !== "Customer Service (Grocery / Non-Greenhouse Retail Store)") {
+      // skip locationCustomerService when location is not Customer Service (Grocery / Non-Greenhouse Retail Store)
     } else if (field === "issue") {
+      // check issue 
       isError = isError || inputData.issue.length === 0; 
     } else {
+      // check the other fields
       const currentField: Keys = field as any;
       const value: string = inputData[currentField] as any;
       isError = isError || value.trim() === "";
     }
-  })
+    if (isError) {
+      // early return
+      return isError;
+    }
+  }
   return isError;
 }

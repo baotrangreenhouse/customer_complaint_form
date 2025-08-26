@@ -50,7 +50,8 @@ const colourStyles: StylesConfig<FormInputOption_Type> = {
 
 const SelectBox = (props: SelectBoxProps) => {
   const {options, label, name, value, isError, onChange} = props;
-  const isErrorCurrent: boolean = isError && FormInputFieldRequired.includes(name) && !value;
+  const isRequired: boolean = FormInputFieldRequired.includes(name);
+  const isErrorCurrent: boolean = isError && isRequired && !value;
   const handleSelectChange = (selectedOption: SingleValue<FormInputOption_Type>) => {
     onChange(name, selectedOption?.value ?? "");
   }
@@ -62,6 +63,11 @@ const SelectBox = (props: SelectBoxProps) => {
           className="text-[var(--black-color)] text-sm font-medium block mb-2"
         >
           {label}
+          {isRequired && (
+            <span className="text-sm text-[var(--red-color)]">
+              *
+            </span>
+          )}
         </label>
         <Select
           instanceId={name}
@@ -91,7 +97,8 @@ interface MultiSelectBoxProps {
 
 const MultiSelectBox = (props: MultiSelectBoxProps) => {
   const {options, label, name, value, isError, onChange} = props;
-  const isErrorCurrent: boolean = isError && FormInputFieldRequired.includes(name) && !value.length;
+  const isRequired: boolean = FormInputFieldRequired.includes(name);
+  const isErrorCurrent: boolean = isError && isRequired && !value.length;
   const handleSelectChange = (selectedOptions: MultiValue<FormInputOption_Type>) => {
     const values: string[] = selectedOptions.map((option) => option.value);
     onChange(name, values);
@@ -104,6 +111,11 @@ const MultiSelectBox = (props: MultiSelectBoxProps) => {
           className="text-[var(--black-color)] text-sm font-medium block mb-2"
         >
           {label}
+          {isRequired && (
+            <span className="text-sm text-[var(--red-color)]">
+              *
+            </span>
+          )}
         </label>
         <Select
           instanceId={name}
