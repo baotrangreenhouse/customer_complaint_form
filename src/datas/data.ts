@@ -9,7 +9,7 @@ const RAW_PRODUCT: string[] = [
 "Farma-C, 60 mL, 300 mL",
 "Gatsby, 300 mL, 900 mL, 946 mL",
 "Genius, 300 mL",
-"Ginger Apple Crips, 300 mL, 946 mL",
+"Ginger Apple Crisp, 300 mL, 946 mL",
 "Ginger-Aid+, 300 mL",
 "Rose, 300 mL",
 "The Giver, 300 mL",
