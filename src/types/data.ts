@@ -17,12 +17,20 @@ import { FormInputData_Type, FormInputFieldObject_Type } from "./type";
  * This centralized configuration ensures consistency across the application.
  * 
  * Field categories:
- * 1. Customer Information: name, location
- * 2. Product Information: flavour, size, dates, quantities  
- * 3. Complaint Details: type, health concerns, issues
- * 4. Response Information: samples, actions, follow-up
+ * 1. Complaint Source: Customer vs Store
+ * 2. Customer Information: name, location
+ * 3. Product Information: flavour, size, dates, quantities  
+ * 4. Complaint Details: type, health concerns, issues
+ * 5. Response Information: possession, actions, follow-up
  */
 export const FormInputFieldObject: FormInputFieldObject_Type = {
+  // === COMPLAINT SOURCE ===
+  complaintSource: {
+    label: "Complaint Source",
+    name: "complaintSource",
+    type: "text"
+  },
+  
   // === CUSTOMER INFORMATION ===
   customerName: {
     label: "Customer Name",
@@ -35,7 +43,7 @@ export const FormInputFieldObject: FormInputFieldObject_Type = {
     type: "text"
   },
   locationCustomerService: {
-    label: "Location Customer Service",
+    label: "Store Location",
     name: "locationCustomerService", 
     type: "text"
   },
@@ -54,12 +62,12 @@ export const FormInputFieldObject: FormInputFieldObject_Type = {
   bestBeforeDate: {
     label: "Best Before Date (BBD)",
     name: "bestBeforeDate",
-    type: "datetime-local"    // HTML5 date/time picker
+    type: "datetime-local"
   },
   affectedUnit: {
-    label: "Number of Affected Unit",
+    label: "Number of Affected Units",
     name: "affectedUnit",
-    type: "number"           // Numeric input with controls
+    type: "number"
   },
 
   // === COMPLAINT DETAILS ===
@@ -68,36 +76,21 @@ export const FormInputFieldObject: FormInputFieldObject_Type = {
     name: "complaintType",
     type: "text"
   },
-  complaintTypeDetails: {
-    label: "Complaint Type Details",
-    name: "complaintTypeDetails",
-    type: "text"
-  },
   healthConcern: {
     label: "Health Concern?",
     name: "healthConcern",
     type: "text"
   },
-  healthConcernDetails: {
-    label: "Health Concern Details",
-    name: "healthConcernDetails",
-    type: "text"
-  },
   issue: {
     label: "Issue",
     name: "issue",
-    type: "text"             // Multi-select handled by component logic
-  },
-  issueDetails: {
-    label: "Issue Details",
-    name: "issueDetails",
     type: "text"
   },
 
   // === RESPONSE INFORMATION ===
-  sampleHeld: {
-    label: "Sample Held",
-    name: "sampleHeld",
+  productInPossession: {
+    label: "Product Still in Possession?",
+    name: "productInPossession",
     type: "text"
   },
   response: {
@@ -129,12 +122,15 @@ export const FormInputFieldObject: FormInputFieldObject_Type = {
  * Note: locationCustomerService is conditionally required based on location selection
  */
 export const FormInputFieldRequired: string[] = [
+  // Complaint source
+  "complaintSource",
+  
   // Customer information
   "customerName",
   "location", 
   "locationCustomerService",  // Only required when location is "Customer Service..."
   
-  // Product information (for each product)
+  // Product information
   "productFlavour",
   "productSize", 
   "affectedUnit",
@@ -146,7 +142,7 @@ export const FormInputFieldRequired: string[] = [
   "issue",                   // At least one issue must be selected
   
   // Response information
-  "sampleHeld", 
+  "productInPossession", 
   "response",
   "followUpRequired",
 ];

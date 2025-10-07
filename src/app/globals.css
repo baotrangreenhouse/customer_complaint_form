@@ -1,84 +1,177 @@
 @import "tailwindcss";
+/* Chapeau-like font: Nunito (rounded, friendly sans-serif) */
+@import url('https://fonts.googleapis.com/css2?family=Nunito:wght@300;400;500;600;700;800&display=swap');
 
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
 :root {
-  --background-white-color: #ffffff;
-  --background-grey-color: #f5f4f5;
-  --background-pale-green-color: #b9ba94;
-  --text-grey-color: #37352F; 
-  --box-grey-color: #e7e7e76b; /* #e7e7e76b */
+  /* Greenhouse Design System - Color Palette */
   
+  /* Neutrals & Backgrounds */
+  --background-white-color: #ffffff;
+  --background-cream-color: #FAF8F5;
+  --background-grey-color: #f5f4f5;
+  
+  /* Greens - Primary Brand Colors */
+  --olive-green: #6B7456;
+  --olive-green-light: #8B9475;
+  --forest-green: #4A5240;
+  --forest-green-dark: #3D4535;
+  --pale-green: #B5B896;
+  
+  /* Accent Colors */
+  --golden-yellow: #E5AF3C;
+  --coral-orange: #E8734F;
+  --bright-orange: #F28C3F;
+  
+  /* Semantic Colors */
+  --success-green: #5D8A73;
+  --success-green-light: #81AE9D;
+  --error-red: #D64545;
+  --error-red-light: #E87C7C;
+  --warning-orange: #EC7B3C;
+  
+  /* Text Colors */
+  --text-primary: #2B2B2B;
+  --text-secondary: #5A5A5A;
+  --text-light: #8A8A8A;
+  
+  /* Legacy compatibility */
   --grey-color: #A1A1AA;
-  --black-color: #1E1E24;
-  --pink-color: #FB9F89;
-  --red-color: #E94057;
-  --orange-color: #ec5e06;
-  --khaki-color: #D5C7B8;
-  --blue-color: #81AE9D;
-  --green-color: #21A179;
-  --pale-green-color: #5D5E3A;
-  --dark-green-color: #2f7d65;
-
-  --light-blue-color: #54b3d6;
-  --dark-blue-color: #3b819d;
+  --black-color: #2B2B2B;
 }
 
 @layer components {
+  /* Typography Scale - Improved responsive scaling */
   .text--main--header {
-    @apply text-3xl md:text-4xl lg:text-5xl;
+    @apply text-2xl md:text-3xl lg:text-4xl xl:text-5xl font-bold;
   }
   .text--header {
-    @apply text-2xl md:text-3xl;
+    @apply text-xl md:text-2xl lg:text-3xl font-bold;
   }
   .text--sub--header {
-    @apply text-lg md:text-xl lg:text-2xl;
+    @apply text-lg md:text-xl lg:text-2xl font-semibold;
   }
   .text--content {
-    @apply text-base md:text-lg lg:text-xl;
+    @apply text-sm md:text-base lg:text-lg;
   }
   .text--sub--content {
-    @apply text-sm sm:text-base lg:text-lg;
+    @apply text-xs sm:text-sm md:text-base lg:text-lg;
   }
   .text--sub--small {
-    @apply text-sm lg:text-base
+    @apply text-xs sm:text-sm md:text-base;
   }
+  
+  /* Layout Utilities */
   .my--container {
     @apply w-full sm:w-[600px] md:w-[700px] lg:w-[800px] xl:w-[900px] 2xl:w-[1000px];
   }
   .layout {
     @apply grid grid-cols-[minmax(40px,1fr)_minmax(auto,708px)_minmax(40px,1fr)] sm:grid-cols-[minmax(96px,1fr)_minmax(auto,708px)_minmax(96px,1fr)];
   }
+  
+  /* Form Input Styles - Sharp Corners */
   .input--box {
-    @apply block w-full rounded-lg bg-[white] border-2 border-[var(--grey-color)] hover:border-[var(--light-blue-color)] focus:border-[var(--light-blue-color)] transition-colors ease-linear placeholder:text-[var(--grey-color)] appearance-none focus:outline-none;
+    @apply block w-full bg-white border-2 border-[var(--text-light)] 
+           hover:border-[var(--olive-green)] focus:border-[var(--olive-green)] 
+           transition-all duration-200 ease-in-out
+           placeholder:text-[var(--text-light)] 
+           appearance-none focus:outline-none focus:ring-0
+           text-[var(--text-primary)];
+    /* Sharp corners - no border-radius */
   }
-  .input--line {
-    @apply block w-full bg-inherit border-b-2 focus:border-b-[var(--black-color)] transition-colors ease-linear placeholder:text-[var(--grey-color)] appearance-none focus:outline-none;
+  
+  .input--box--error {
+    @apply border-[var(--error-red)] hover:border-[var(--error-red)] focus:border-[var(--error-red)];
+  }
+  
+  .input--box--success {
+    @apply border-[var(--success-green)] hover:border-[var(--success-green)] focus:border-[var(--success-green)];
+  }
+  
+  /* Button Styles - Sharp Corners */
+  .btn--primary {
+    @apply bg-[var(--olive-green)] text-white font-semibold
+           hover:bg-[var(--forest-green)] 
+           active:bg-[var(--forest-green-dark)]
+           transition-all duration-200 ease-in-out
+           shadow-md hover:shadow-lg
+           disabled:opacity-50 disabled:cursor-not-allowed;
+    /* Sharp corners - no border-radius */
+  }
+  
+  .btn--secondary {
+    @apply bg-[var(--coral-orange)] text-white font-semibold
+           hover:bg-[var(--warning-orange)] 
+           active:brightness-90
+           transition-all duration-200 ease-in-out
+           shadow-md hover:shadow-lg
+           disabled:opacity-50 disabled:cursor-not-allowed;
+  }
+  
+  .btn--outline {
+    @apply bg-transparent border-2 border-[var(--olive-green)] text-[var(--olive-green)] font-semibold
+           hover:bg-[var(--olive-green)] hover:text-white
+           transition-all duration-200 ease-in-out
+           disabled:opacity-50 disabled:cursor-not-allowed;
+  }
+  
+  .btn--danger {
+    @apply bg-[var(--error-red)] text-white font-semibold
+           hover:bg-[var(--error-red-light)] 
+           transition-all duration-200 ease-in-out
+           shadow-md hover:shadow-lg
+           disabled:opacity-50 disabled:cursor-not-allowed;
   }
 
-  .hover--scale--transition--button {
-    @apply hover:scale-110 transition-transform ease-in duration-300;
+  /* Greenhouse-specific animations */
+  .greenhouse--hover {
+    @apply transition-all duration-200 ease-in-out hover:translate-y-[-2px] hover:shadow-lg;
+  }
+  
+  .greenhouse--scale {
+    @apply transition-transform duration-200 ease-in-out hover:scale-[1.02];
   }
 
-  .box--shadow {
-    box-shadow: 0 6px 28px 0 rgba(0, 0, 0, 0.1), 0 2px 4px 0 rgba(0, 0, 0, 0.2);
+  /* Shadows - Greenhouse style */
+  .shadow--greenhouse {
+    box-shadow: 0 4px 16px rgba(107, 116, 86, 0.15);
   }
-  .brighter--shadow--green {
-    box-shadow: 0 0 0.7rem #81AE9D;
+  
+  .shadow--greenhouse--hover {
+    box-shadow: 0 8px 24px rgba(107, 116, 86, 0.25);
   }
-  .brighter--shadow--khaki {
-    box-shadow: 0 0 0.3rem #D5C7B8;
+  
+  /* Badge/Tag Styles - Sharp Corners */
+  .badge {
+    @apply px-3 py-1 text-xs font-bold uppercase tracking-wide;
+    /* Sharp corners */
   }
-  .brighter--shadow--red {
-    box-shadow: 0 0 0.3rem #dc2626;
+  
+  .badge--success {
+    @apply bg-[var(--success-green)] text-white;
   }
+  
+  .badge--error {
+    @apply bg-[var(--error-red)] text-white;
+  }
+  
+  .badge--warning {
+    @apply bg-[var(--warning-orange)] text-white;
+  }
+  
+  .badge--new {
+    @apply bg-[var(--golden-yellow)] text-[var(--text-primary)];
+  }
+
+  /* Loading Animation */
   .loader-dot, .loader-div {
-    display: inline-block; /* Ensures it behaves like an inline element */
-    width: 30px; /* Adjust as needed */
+    display: inline-block;
+    width: 30px;
     height: 12px;
-    --_g: no-repeat radial-gradient(circle closest-side, #adadad 90%, #0000);
+    --_g: no-repeat radial-gradient(circle closest-side, var(--olive-green) 90%, #0000);
     background: 
       var(--_g) 0% 50%,
       var(--_g) 50% 50%,
@@ -100,13 +193,41 @@
   * {
     scroll-behavior: smooth;
   }
+  
+  /* Custom scrollbar - Greenhouse style */
   ::-webkit-scrollbar {
     width: 0.5rem;
   }
   ::-webkit-scrollbar-track {
-    background-color: #f1f1f1;
-    border-radius: 0.5rem;
+    background-color: var(--background-cream-color);
   }
+  ::-webkit-scrollbar-thumb {
+    background-color: var(--olive-green);
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    background-color: var(--forest-green);
+  }
+  
+  /* Base typography */
+  body {
+    font-family: 'Chapeau', 'Nunito', sans-serif;
+    color: var(--text-primary);
+    background-color: var(--background-cream-color);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+  
+  /* Remove default border-radius from all elements */
+  * {
+    border-radius: 0 !important;
+  }
+  
+  /* Ensure sharp corners on form elements */
+  input, select, textarea, button {
+    border-radius: 0 !important;
+  }
+}
+  
   ::-webkit-scrollbar-thumb {
     background-color: var(--light-blue-color);
     border-radius: 0.5rem;
@@ -132,4 +253,4 @@
     user-select: none; /* Standard */
     cursor: default;
   }
-}
+

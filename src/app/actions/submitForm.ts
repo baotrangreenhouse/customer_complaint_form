@@ -1,79 +1,68 @@
 /**
  * Submit Form Server Action
  * 
- * This Server Action handles form submission to the Supabase database.
- * It performs a two-step insert process:
- * 1. Insert main complaint data into customer_complaint table
- * 2. Insert related product data into customer_complaint_product table
+ * NEW STRUCTURE: This Server Action handles submission of multiple complaint entries.
+ * Each entry represents a single product complaint and is inserted as a separate record.
  * 
  * Database Schema:
- * - customer_complaint: Main complaint information
- * - customer_complaint_product: Product details (linked by complaint_id)
+ * - customer_complaint: Contains all complaint data including product info
  * 
- * The function handles the relational data by first inserting the complaint,
- * getting the generated ID, then inserting associated products.
+ * The function accepts an array of FormInputData_Type and inserts each as a separate row.
+ * 
+ * Removed fields: complaintTypeDetails, healthConcernDetails, issueDetails
+ * Renamed fields: sampleHeld → productInPossession
+ * New fields: complaintSource, productFlavour, productSize, affectedUnit, bestBeforeDate
  */
 "use server"
 
-import { API_Response_Type, FormInputData_Type, FormInputProduct_Type } from "@/types/type";
+import { API_Response_Type, FormInputData_Type } from "@/types/type";
 import supabase from "@/lib/supabaseClient";
 
-// Database table name constants
+// Database table name constant
 const customer_complaint_table: string = "customer_complaint";
-const customer_complaint_product_table: string = "customer_complaint_product";
 
 /**
- * Submits form data to the database
+ * Submits multiple form entries to the database
  * 
- * @param inputData - Complete form data including customer info and products
+ * @param inputDataArray - Array of form entries, each representing one product complaint
  * @returns Promise<API_Response_Type> - Standardized response object
  */
-export const submitForm = async (inputData: FormInputData_Type): Promise<API_Response_Type> => {
+export const submitForm = async (inputDataArray: FormInputData_Type[]): Promise<API_Response_Type> => {
   
-  // Step 1: Insert main complaint data
+  // Transform array of entries into database insert format
+  const complaintsToInsert = inputDataArray.map(inputData => ({
+    // Complaint source (Customer vs Store)
+    complaintSource: inputData.complaintSource,
+    
+    // Customer information
+    customerName: inputData.customerName,
+    location: inputData.location,
+    locationCustomerService: inputData.locationCustomerService,
+    
+    // Product information (now part of main complaint record)
+    productFlavour: inputData.productFlavour,
+    productSize: inputData.productSize,
+    affectedUnit: inputData.affectedUnit,
+    bestBeforeDate: inputData.bestBeforeDate,
+    
+    // Complaint details
+    complaintType: inputData.complaintType,
+    healthConcern: inputData.healthConcern,
+    issue: inputData.issue.join(";"), // Convert array to semicolon-separated string
+    
+    // Response and follow-up
+    productInPossession: inputData.productInPossession, // Renamed from sampleHeld
+    response: inputData.response,
+    followUpRequired: inputData.followUpRequired,
+    additionalNotes: inputData.additionalNotes
+  }));
+
+  // Insert all complaints in a single batch operation
   const { status, data, error } = await supabase
     .from(customer_complaint_table)
-    .insert([
-      {
-        // Map form fields to database columns
-        customer_name: inputData.customerName,
-        location: inputData.location,
-        complaint_type: inputData.complaintType,
-        complaint_type_details: inputData.complaintTypeDetails,
-        health_concern: inputData.healthConcern,
-        health_concern_details: inputData.healthConcernDetails,
-        issue: inputData.issue.join(";"), // Convert array to semicolon-separated string
-        issue_details: inputData.issueDetails,
-        sample_held: inputData.sampleHeld,
-        response: inputData.response,
-        follow_up_required: inputData.followUpRequired,
-        additional_notes: inputData.additionalNotes
-      }
-    ])
-    .select(); // Return the inserted record (including generated ID)
+    .insert(complaintsToInsert)
+    .select();
 
-  // Step 2: If complaint insert succeeded, insert related products
-  if (!error) {
-    const { status: productStatus, error: productError } = await supabase
-      .from(customer_complaint_product_table)
-      .insert(
-        // Map each product to database record with complaint_id relationship
-        inputData.product.map((product: FormInputProduct_Type) => {
-          return {
-            complaint_id: data[0].id, // Link to the complaint we just created
-            product_flavour: product.productFlavour,
-            product_size: product.productSize,
-            affected_unit: product.affectedUnit,
-            best_before_date: product.bestBeforeDate
-          }
-        })
-      );
-    
-    // Return the product insert result
-    return { status: productStatus, data: [], error: productError };
-  }
-  
-  // Return the complaint insert error if it failed
-  return { status, data: [], error };
+  return { status, data: data || [], error };
 }
 

@@ -6,10 +6,13 @@
  * 
  * Features:
  * - Automatic required field detection and asterisk display
- * - Error state styling with red borders
+ * - Error state styling with red borders (Greenhouse error red)
+ * - Success state styling with green borders
  * - Consistent label and textarea styling
  * - Disabled autocomplete, autocorrect, and spellcheck
  * - Resizable textarea for user convenience
+ * - Sharp corners matching Greenhouse design language
+ * - Smooth transitions on interaction
  * 
  * Used for fields like:
  * - Complaint details
@@ -21,12 +24,12 @@ import { cn } from "@/lib/tailwind-merge";
 import { FormInputFieldRequired } from "@/types/data";
 
 interface Props {
-  label: string,
-  name: string,
-  type: string,
-  value: string,
-  isError: boolean,
-  onChange: Function,
+  label: string;
+  name: string;
+  type: string;
+  value: string;
+  isError: boolean;
+  onChange: Function;
 }
 
 const TextArea = (props: Props) => {
@@ -38,28 +41,34 @@ const TextArea = (props: Props) => {
   // Show error styling only if: global error state + field is required + field is empty
   const isErrorCurrent: boolean = isError && isRequired && !value;
   
+  // Show success styling if field is filled (optional enhancement)
+  const isSuccess: boolean = isRequired && !!value;
+  
   return (
-    <div>
+    <div className="w-full">
       {/* Field label with required indicator */}
       <label
         htmlFor={name}
-        className="text-[var(--black-color)] text-sm font-medium block mb-2"
+        className="text-[var(--text-primary)] text-sm font-semibold block mb-2"
       >
         {label}
         {/* Red asterisk for required fields */}
         {isRequired && (
-          <span className="text-sm text-[var(--red-color)]">
+          <span className="text-sm text-[var(--error-red)] ml-1">
             *
           </span>
         )}
       </label>
       
-      {/* Textarea field with conditional error styling */}
+      {/* Textarea field with conditional error/success styling */}
       <textarea
+        id={name}
         name={name}
+        rows={4}
         className={cn(
-          "text--content text-[var(--black-color)] input--box p-1.5", 
-          isErrorCurrent ? "border-[var(--red-color)]" : ""
+          "text--content text-[var(--text-primary)] input--box px-3 py-2 resize-y min-h-[100px]",
+          isErrorCurrent && "input--box--error",
+          !isErrorCurrent && isSuccess && "input--box--success"
         )}
         value={value}
         onChange={(e) => onChange(e)}
@@ -67,6 +76,13 @@ const TextArea = (props: Props) => {
         autoCorrect="off"     // Disable mobile autocorrect  
         spellCheck="false"    // Disable spellcheck for form fields
       />
+      
+      {/* Error message display */}
+      {isErrorCurrent && (
+        <p className="text-xs text-[var(--error-red)] mt-1 font-medium">
+          This field is required
+        </p>
+      )}
     </div>
   )
 }

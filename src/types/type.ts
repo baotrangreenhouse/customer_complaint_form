@@ -30,6 +30,7 @@ export type FormInputField_Type = {
  * Used for consistent field setup across components
  */
 export type FormInputFieldObject_Type = {
+  complaintSource: FormInputField_Type,  // Customer vs Store
   customerName: FormInputField_Type,
   location: FormInputField_Type,
   locationCustomerService: FormInputField_Type,
@@ -38,12 +39,9 @@ export type FormInputFieldObject_Type = {
   bestBeforeDate: FormInputField_Type,
   affectedUnit: FormInputField_Type,
   complaintType: FormInputField_Type,
-  complaintTypeDetails: FormInputField_Type,
   healthConcern: FormInputField_Type,
-  healthConcernDetails: FormInputField_Type,
   issue: FormInputField_Type,
-  issueDetails: FormInputField_Type,
-  sampleHeld: FormInputField_Type,
+  productInPossession: FormInputField_Type,  // Renamed from sampleHeld
   response: FormInputField_Type,
   followUpRequired: FormInputField_Type,
   additionalNotes: FormInputField_Type
@@ -64,27 +62,35 @@ export type FormInputProduct_Type = {
 /**
  * Complete form data structure
  * Represents all information collected in a customer complaint form
- * This structure is used for form state management and API submission
+ * NEW STRUCTURE: Each product submission creates a separate complaint entry
  */
 export type FormInputData_Type = {
+  // Database fields (optional - only present when fetched from DB)
+  id?: number,
+  created_at?: string,
+  updated_at?: string,
+  
+  // Complaint source
+  complaintSource: string,  // "Customer" or "Store"
+  
   // Customer information
   customerName: string,
   location: string,
   locationCustomerService: string,
   
-  // Product information (array to support multiple products)
-  product: FormInputProduct_Type[],
+  // Product information (single product per complaint now)
+  productFlavour: string,
+  productSize: string,
+  affectedUnit: string,
+  bestBeforeDate: string,
   
   // Complaint details
   complaintType: string,
-  complaintTypeDetails: string,
   healthConcern: string,
-  healthConcernDetails: string,
   issue: string[],              // Array of issues (multi-select)
-  issueDetails: string,
   
   // Response and follow-up
-  sampleHeld: string,
+  productInPossession: string,  // Renamed from sampleHeld
   response: string,
   followUpRequired: string,
   additionalNotes: string

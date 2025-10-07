@@ -7,28 +7,14 @@
  * Key responsibilities:
  * - Sets up HTML structure (<html>, <body>)
  * - Defines metadata (title, description, favicon)
- * - Loads Google Fonts (Geist Sans and Geist Mono)
- * - Includes global CSS styles
+ * - Loads Chau Philomene One font (Greenhouse brand font)
+ * - Includes global CSS styles with Greenhouse design system
  * - Renders the navigation bar on every page
  * - Provides the {children} slot where page content renders
  */
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import TopHeader from "@/components/Nav/navbar";
-
-// Google Fonts configuration
-// Geist Sans - primary font for body text
-const geistSans = Geist({
-  variable: "--font-geist-sans",
-  subsets: ["latin"],
-});
-
-// Geist Mono - monospace font for code/technical content
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
-});
 
 // Application metadata - appears in browser tab and search engines
 export const metadata: Metadata = {
@@ -47,9 +33,11 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
-      >
+      <head>
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
+      </head>
+      <body className="antialiased">
         {/* Navigation bar appears on every page */}
         <TopHeader />
         

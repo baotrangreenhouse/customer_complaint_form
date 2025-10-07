@@ -10,11 +10,11 @@
  * - Queries the "customer_complaint" table
  * - Returns all complaint records
  * 
- * Database table: customer_complaint
+ * Database structure: 1:1 model (each product is a separate complaint record)
  * 
  * Returns:
  * - status: HTTP status code from Supabase
- * - data: Array of complaint records
+ * - data: Array of complaint records (each includes product info)
  * - error: Error object if query fails
  */
 "use server"
@@ -25,54 +25,43 @@ import supabase from "@/lib/supabaseClient"
 const customer_complaint_table: string = "customer_complaint";
 
 /**
- * Fetches all complaint records from the database with related product data
+ * Fetches all complaint records from the database
+ * Each record represents one product complaint (1:1 structure)
  * @returns Promise containing status, data array, and error object
  */
 export const getComplaint = async () => {
   // Query Supabase to select all records from customer_complaint table
-  // and include related products from customer_complaint_product table
+  // Order by most recent first
   const { status, data, error } = await supabase
     .from(customer_complaint_table)
-    .select(`
-      *,
-      customer_complaint_product (
-        id,
-        product_flavour,
-        product_size,
-        affected_unit,
-        best_before_date
-      )
-    `)
+    .select('*')
+    .order('created_at', { ascending: false })
 
-  // Transform the data to match our TypeScript interface
+  // Data is already in camelCase from database, no transformation needed
+  // Each record already contains all product information inline
   const transformedData = data?.map(complaint => ({
-    // Map database column names (snake_case) to TypeScript interface (camelCase)
-    customerName: complaint.customer_name,
+    id: complaint.id,
+    created_at: complaint.created_at,
+    complaintSource: complaint.complaintSource,
+    customerName: complaint.customerName,
     location: complaint.location,
-    locationCustomerService: complaint.location_customer_service || "",
-    complaintType: complaint.complaint_type,
-    complaintTypeDetails: complaint.complaint_type_details || "",
-    healthConcern: complaint.health_concern,
-    healthConcernDetails: complaint.health_concern_details || "",
-    issue: complaint.issue ? complaint.issue.split(";") : [], // Convert semicolon-separated string back to array
-    issueDetails: complaint.issue_details || "",
-    sampleHeld: complaint.sample_held,
+    locationCustomerService: complaint.locationCustomerService,
+    productFlavour: complaint.productFlavour,
+    productSize: complaint.productSize,
+    affectedUnit: complaint.affectedUnit,
+    bestBeforeDate: complaint.bestBeforeDate,
+    complaintType: complaint.complaintType,
+    healthConcern: complaint.healthConcern,
+    issue: typeof complaint.issue === 'string' ? complaint.issue.split(';') : complaint.issue || [],
+    productInPossession: complaint.productInPossession,
     response: complaint.response,
-    followUpRequired: complaint.follow_up_required,
-    additionalNotes: complaint.additional_notes || "",
-    
-    // Map the nested product data to match our FormInputData_Type structure
-    product: complaint.customer_complaint_product?.map((p: any) => ({
-      productFlavour: p.product_flavour,
-      productSize: p.product_size,
-      affectedUnit: p.affected_unit,
-      bestBeforeDate: p.best_before_date
-    })) || []
+    followUpRequired: complaint.followUpRequired,
+    additionalNotes: complaint.additionalNotes
   }));
 
   // Log results for debugging (should be replaced with proper logging in production)
   console.log("Query status:", status);
-  console.log("Retrieved data:", transformedData);
+  console.log("Retrieved complaints:", transformedData?.length || 0);
   console.log("Error (if any):", error);
   
   return { status, data: transformedData, error };

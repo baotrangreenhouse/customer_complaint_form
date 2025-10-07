@@ -105,7 +105,15 @@ export const LOCATION_CUSTOMER_SERVICE: string[] = [
   "Sobeys"
 ]
 
-export const COMPLAINT_TYPE: string[] = ["Customer Complaint", "Store Complaint"]
+export const COMPLAINT_SOURCE: string[] = ["Customer", "Store"]
+export const COMPLAINT_TYPE: string[] = [
+  "Contamination",
+  "Mold",
+  "Taste/Smell Issue",
+  "Packaging Defect",
+  "Product Quality",
+  "Other"
+]
 export const YES_NO: string[] = ["Yes", "No"]
 export const ISSUE: string[] = [
   "Smells Off / Rancid",

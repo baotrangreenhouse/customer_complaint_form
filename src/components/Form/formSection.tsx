@@ -1,282 +1,546 @@
 "use client"
 
 import { FormEvent, useEffect, useState } from "react";
-import { FormInputData_Type, FormInputOption_Type, FormInputProduct_Type } from "@/types/type";
+import { FormInputData_Type, FormInputOption_Type } from "@/types/type";
 import { FormInputFieldObject, FormInputFieldRequired } from "@/types/data";
 import SelectBox, { MultiSelectBox } from "./selectBox";
-import { COMPLAINT_TYPE, FLAVOUR, ISSUE, LOCATION, LOCATION_CUSTOMER_SERVICE, PRODUCT, RESPONSE_ACTION, SIZE, YES_NO, convertToOption, filterFlavour, filterSize} from "@/datas/data";
+import { COMPLAINT_SOURCE, COMPLAINT_TYPE, FLAVOUR, ISSUE, LOCATION, RESPONSE_ACTION, SIZE, YES_NO, convertToOption, filterFlavour, filterSize} from "@/datas/data";
 import InputBox from "./inputBox";
 import Button from "../Button/button";
 import { PlusIcon, TrashIcon } from "../Icon/icon";
 import TextArea from "./textArea";
 import { submitForm } from "@/app/actions/submitForm";
+import ErrorModal from "../Modal/errorModal";
+import SuccessModal from "../Modal/successModal";
+import { getStoreLocations } from "@/app/actions/getStoreLocations";
 
-const FormInputDataProductDefault: FormInputProduct_Type = {
-  productFlavour: "", productSize: "", bestBeforeDate: "", affectedUnit: "1"
-};
+/**
+ * Default form data structure - single product per submission
+ * Each form entry represents one product complaint
+ */
 const FormInputDataDefault: FormInputData_Type = {
+  complaintSource: "",
   customerName: "",
   location: "",
   locationCustomerService: "",
-  product: [{... FormInputDataProductDefault}], // copy by value
+  productFlavour: "",
+  productSize: "",
+  affectedUnit: "1",
+  bestBeforeDate: "",
   complaintType: "",
-  complaintTypeDetails: "",
   healthConcern: "",
-  healthConcernDetails: "",
   issue: [],
-  issueDetails: "",
-  sampleHeld: "",
+  productInPossession: "",
   response: "",
   followUpRequired: "",
   additionalNotes: ""
 };
+
+// Convert constants to react-select options
+const FormInputOption_ComplaintSource: FormInputOption_Type[] = convertToOption(COMPLAINT_SOURCE);
 const FormInputOption_Location: FormInputOption_Type[] = convertToOption(LOCATION);
-const FormInputOption_LocationCustomerService: FormInputOption_Type[] = convertToOption(LOCATION_CUSTOMER_SERVICE);
 const FormInputOption_ComplaintType: FormInputOption_Type[] = convertToOption(COMPLAINT_TYPE);
 const FormInputOption_YesNo: FormInputOption_Type[] = convertToOption(YES_NO);
 const FormInputOption_Issue: FormInputOption_Type[] = convertToOption(ISSUE);
 const FormInputOption_Response: FormInputOption_Type[] = convertToOption(RESPONSE_ACTION);
 
+/**
+ * FormSection Component
+ * 
+ * NEW STRUCTURE: 
+ * - Complaint Source (Customer/Store) at top
+ * - Each product gets its own form entry (white box)
+ * - "Add Another Product" creates duplicate form
+ * - Submit all entries as separate database records
+ * - Dynamic store location loading from external SQL Server
+ */
 const FormSection = () => {
-  const [inputData, setInputData] = useState<FormInputData_Type>(FormInputDataDefault);
+  // Array of form entries - each entry is a separate product complaint
+  const [formEntries, setFormEntries] = useState<FormInputData_Type[]>([{...FormInputDataDefault}]);
+  
+  // Shared fields across all entries (set once, applied to all)
+  const [sharedData, setSharedData] = useState({
+    complaintSource: "",
+    customerName: "",
+    location: "",
+    locationCustomerService: ""
+  });
+  
+  // Product flavour/size options for each entry (dynamic filtering)
+  const [formOptionsProductFlavour, setFormOptionsProductFlavour] = useState<FormInputOption_Type[][]>([convertToOption(FLAVOUR)]);
+  const [formOptionsProductSize, setFormOptionsProductSize] = useState<FormInputOption_Type[][]>([convertToOption(SIZE)]);
+  
+  // Dynamic store locations from external database
+  const [storeLocations, setStoreLocations] = useState<FormInputOption_Type[]>([]);
+  const [loadingStoreLocations, setLoadingStoreLocations] = useState<boolean>(false);
+  
   const [isError, setIsError] = useState<boolean>(false);
   const [errorMessage, setErrorMessage] = useState<string>("");
-  const [FormInputOption_ProductFlavour, setFormInputOption_ProductFlavour] = useState<FormInputOption_Type[][]>([convertToOption(FLAVOUR)]);
-  const [FormInputOption_ProductSize, setFormInputOption_ProductSize] = useState<FormInputOption_Type[][]>([convertToOption(SIZE)]);
-  // handleInputBoxChange is for input box
-  const handleInputBoxChange = (event: FormEvent<HTMLFormElement>) => {
-    setInputData({
-      ...inputData,
-      [event.currentTarget.name]: event.currentTarget.value
-    });
-  }
-  // handleSelectBoxChangeWrapper is for the select box
-  const handleSelectBoxChangeWrapper = (name: string, selectedOptionData: string) => {
-    setInputData({
-      ...inputData,
-      [name]: selectedOptionData
-    });
-  }
-  // handleMultiSelectBoxChangeWrapper is for the multi select box
-  const handleMultiSelectBoxChangeWrapper = (name: string, selectedOptionData: string[]) => {
-    setInputData({
-      ...inputData,
-      [name]: selectedOptionData
-    });
-  }
-  // handleClickAddProduct, handleClickRemoveProduct is for adding and removing the number of products in a complaint form
-  const handleClickAddProduct = (index: number) => {
-    // add to product
-    const newProduct: FormInputProduct_Type[] = [
-      ...inputData.product.slice(0, index + 1),
-      {...FormInputDataProductDefault},
-      ...inputData.product.slice(index + 1),
-    ];
-    setInputData({
-      ...inputData,
-      product: newProduct,
-    });
-    // add to option
-    // flavour
-    const newFlavourOption: FormInputOption_Type[][] = [
-      ...FormInputOption_ProductFlavour.slice(0, index + 1),
-      convertToOption(FLAVOUR),
-      ...FormInputOption_ProductFlavour.slice(index + 1),
-    ];
-    setFormInputOption_ProductFlavour(newFlavourOption);
-    // size
-    const newSizeOption: FormInputOption_Type[][] = [
-      ...FormInputOption_ProductSize.slice(0, index + 1),
-      convertToOption(SIZE),
-      ...FormInputOption_ProductSize.slice(index + 1),
-    ];
-    setFormInputOption_ProductSize(newSizeOption);
-  }
-  const handleClickRemoveProduct = (index: number) => {
-    // delete product
-    const newProduct: FormInputProduct_Type[] = inputData.product.filter((_, i) => i !== index);
-    setInputData({
-      ...inputData,
-      product: newProduct,
-    });
-    // delete option
-    const newFlavourOption: FormInputOption_Type[][] = FormInputOption_ProductFlavour.filter((_, i) => i !== index);
-    setFormInputOption_ProductFlavour(newFlavourOption);
-    const newSizeOption: FormInputOption_Type[][] = FormInputOption_ProductSize.filter((_, i) => i !== index);
-    setFormInputOption_ProductSize(newSizeOption);
+  const [showErrorModal, setShowErrorModal] = useState<boolean>(false);
+  const [databaseError, setDatabaseError] = useState<any>(null);
+  const [showSuccessModal, setShowSuccessModal] = useState<boolean>(false);
+  const [successCount, setSuccessCount] = useState<number>(0);
+
+  /**
+   * Fetch store locations when location is set to Customer Service
+   */
+  useEffect(() => {
+    const fetchLocations = async () => {
+      if (sharedData.location === "Customer Service (Grocery / Non-Greenhouse Retail Store)") {
+        setLoadingStoreLocations(true);
+        try {
+          const { data, error } = await getStoreLocations();
+          
+          if (error) {
+            console.error('Failed to fetch store locations:', error);
+            // Keep empty array - user can still type manually
+            setStoreLocations([]);
+          } else {
+            // Convert string array to FormInputOption_Type array
+            const options = convertToOption(data);
+            setStoreLocations(options);
+          }
+        } catch (err) {
+          console.error('Error fetching store locations:', err);
+          setStoreLocations([]);
+        } finally {
+          setLoadingStoreLocations(false);
+        }
+      }
+    };
+
+    fetchLocations();
+  }, [sharedData.location]);
+
+  /**
+   * Handle shared field changes (applies to all entries)
+   */
+  const handleSharedFieldChange = (name: string, value: string) => {
+    const newSharedData = {
+      ...sharedData,
+      [name]: value
+    };
+    setSharedData(newSharedData);
+    
+    // Update all form entries with new shared data
+    const updatedEntries = formEntries.map(entry => ({
+      ...entry,
+      [name]: value
+    }));
+    setFormEntries(updatedEntries);
   }
 
-  const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
-    // check for error in the input fields
-    const isError: boolean = checkInputData(inputData);
-    setIsError(isError);
-    if (isError) {
-      setErrorMessage("Please fill in the required fields");
+  /**
+   * Handle individual entry field changes
+   */
+  const handleEntryFieldChange = (entryIndex: number, name: string, value: string | string[]) => {
+    const updatedEntries = [...formEntries];
+    updatedEntries[entryIndex] = {
+      ...updatedEntries[entryIndex],
+      [name]: value
+    };
+    setFormEntries(updatedEntries);
+  }
+
+  /**
+   * Handle product-specific field changes with dynamic option filtering
+   */
+  const handleProductFieldChange = (entryIndex: number, name: "productFlavour" | "productSize", value: string) => {
+    // Update the entry
+    const updatedEntries = [...formEntries];
+    updatedEntries[entryIndex] = {
+      ...updatedEntries[entryIndex],
+      [name]: value
+    };
+    setFormEntries(updatedEntries);
+
+    // Update filtered options based on selection
+    const currentEntry = updatedEntries[entryIndex];
+    
+    // Update flavour options based on size
+    const newFlavourOptions = [...formOptionsProductFlavour];
+    newFlavourOptions[entryIndex] = convertToOption(
+      FLAVOUR.filter((flavour: string) => filterFlavour(flavour, currentEntry.productSize))
+    );
+    setFormOptionsProductFlavour(newFlavourOptions);
+    
+    // Update size options based on flavour
+    const newSizeOptions = [...formOptionsProductSize];
+    newSizeOptions[entryIndex] = convertToOption(
+      SIZE.filter((size: string) => filterSize(currentEntry.productFlavour, size))
+    );
+    setFormOptionsProductSize(newSizeOptions);
+  }
+
+  /**
+   * Add a new product form entry
+   */
+  const handleAddProduct = () => {
+    const newEntry: FormInputData_Type = {
+      ...FormInputDataDefault,
+      // Copy shared fields to new entry
+      complaintSource: sharedData.complaintSource,
+      customerName: sharedData.customerName,
+      location: sharedData.location,
+      locationCustomerService: sharedData.locationCustomerService
+    };
+    
+    setFormEntries([...formEntries, newEntry]);
+    setFormOptionsProductFlavour([...formOptionsProductFlavour, convertToOption(FLAVOUR)]);
+    setFormOptionsProductSize([...formOptionsProductSize, convertToOption(SIZE)]);
+  }
+
+  /**
+   * Remove a product form entry
+   */
+  const handleRemoveProduct = (entryIndex: number) => {
+    if (formEntries.length === 1) {
+      setErrorMessage("You must have at least one product entry");
       return;
     }
-    // post
-    const {status, data, error} = await submitForm(inputData);
-    if (!error) {
-      console.log(status, data);
+    
+    setFormEntries(formEntries.filter((_, index) => index !== entryIndex));
+    setFormOptionsProductFlavour(formOptionsProductFlavour.filter((_, index) => index !== entryIndex));
+    setFormOptionsProductSize(formOptionsProductSize.filter((_, index) => index !== entryIndex));
+  }
+
+  /**
+   * Submit all form entries
+   */
+  const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    
+    // Validate all entries
+    const hasErrors = formEntries.some(entry => checkInputData(entry));
+    setIsError(hasErrors);
+    
+    if (hasErrors) {
+      setErrorMessage("Please fill in all required fields for each product");
+      return;
     }
+
+    // Submit all entries (pass as array)
+    const {status, data, error} = await submitForm(formEntries);
+    
+    if (!error) {
+      console.log(`Successfully submitted ${formEntries.length} product complaint(s)`, status, data);
+      
+      // Show success modal
+      setSuccessCount(formEntries.length);
+      setShowSuccessModal(true);
+      
+      // Reset form
+      setFormEntries([{...FormInputDataDefault}]);
+      setSharedData({
+        complaintSource: "",
+        customerName: "",
+        location: "",
+        locationCustomerService: ""
+      });
+      setFormOptionsProductFlavour([convertToOption(FLAVOUR)]);
+      setFormOptionsProductSize([convertToOption(SIZE)]);
+      setErrorMessage("");
+      setIsError(false);
+      setDatabaseError(null);
+    }
+    
     if (error) {
-      setErrorMessage(error.message);
+      console.error("Database error:", error);
+      setDatabaseError(error);
+      setShowErrorModal(true);
     }
   }
 
   useEffect(() => {
-    // clear error message when new input is typed in
-    // note that error message is only for saying what is an error, it does not responsible for having the input box red
+    // Clear error message when form changes
     setErrorMessage("");
-  }, [inputData])
+  }, [formEntries, sharedData])
 
   return (
-    <form className="flex flex-col w-full space-y-3" onSubmit={(e) => handleSubmit(e)}>
-      <Header text="1. Information" />
-      <InputBox {...FormInputFieldObject.customerName} value={inputData.customerName} isError={isError} onChange={handleInputBoxChange} />
-      <SelectBox {...FormInputFieldObject.location} options={FormInputOption_Location} value={inputData.location} isError={isError} onChange={handleSelectBoxChangeWrapper} />
-      {inputData.location === "Customer Service (Grocery / Non-Greenhouse Retail Store)" && (
-        <SelectBox {...FormInputFieldObject.locationCustomerService} options={FormInputOption_LocationCustomerService} value={inputData.locationCustomerService} isError={isError} onChange={handleMultiSelectBoxChangeWrapper} />
-      )}
-      <Line />
-      <Header text="2. Product" />
-      {inputData.product.map((product: FormInputProduct_Type, index: number) => {
-        const handleInputBoxChange_Product = (event: FormEvent<HTMLFormElement>) => {
-          // handle change for bestBeforeDate, affectedUnit
-          var newProduct: FormInputProduct_Type[] = [...inputData.product];
-          const name: "bestBeforeDate" | "affectedUnit" = event.currentTarget.name as any;
-          newProduct[index][name] = event.currentTarget.value;
-          setInputData({
-            ...inputData,
-            product: newProduct
-          });
-        }
-        const handleSelectBoxChangeWrapper_Product = (name: "productFlavour" | "productSize", selectedOptionData: string) => {
-          // handle change for productFlavour, productSize
-          var newProduct: FormInputProduct_Type[] = [...inputData.product];
-          newProduct[index][name] = selectedOptionData;
-          setInputData({
-            ...inputData,
-            product: newProduct  
-          });
-          // handle option
-          var newFlavourOption: FormInputOption_Type[][] = FormInputOption_ProductFlavour;
-          newFlavourOption[index] = convertToOption(FLAVOUR.filter((flavour: string) => filterFlavour(flavour, product.productSize)));
-          setFormInputOption_ProductFlavour(newFlavourOption);
-          var newSizeOption: FormInputOption_Type[][] = FormInputOption_ProductSize;
-          newSizeOption[index] = convertToOption(SIZE.filter((size: string) => filterSize(product.productFlavour, size)))
-          setFormInputOption_ProductSize(newSizeOption);
-        }
-        return (
-          <div key={index} className="flex flex-col w-full space-y-3">
-            <SubHeader text={`Product ${index + 1}`} />
-            <SelectBox {...FormInputFieldObject.productFlavour} options={FormInputOption_ProductFlavour[index]} value={product.productFlavour} isError={isError} onChange={handleSelectBoxChangeWrapper_Product} />
-            <SelectBox {...FormInputFieldObject.productSize} options={FormInputOption_ProductSize[index]} value={product.productSize} isError={isError} onChange={handleSelectBoxChangeWrapper_Product} />
-            <div className="grid grid-cols-2 gap-2">
-              <InputBox {...FormInputFieldObject.affectedUnit} value={product.affectedUnit} isError={isError} onChange={handleInputBoxChange_Product} />
-              <InputBox {...FormInputFieldObject.bestBeforeDate} value={product.bestBeforeDate} isError={isError} onChange={handleInputBoxChange_Product} />
-            </div>
-            <div className="flex flex-row space-x-2">
-              <Button type="button" className="bg-[var(--dark-green-color)]" onClick={handleClickAddProduct} index={index}>
-                <span className="text-white block h-fit w-fit p-1.5">
-                  <PlusIcon />
-                </span>
-              </Button>
-              <Button type="button" className="bg-[var(--red-color)]" onClick={handleClickRemoveProduct} index={index}>
-                <span className="text-white block h-fit w-fit p-1.5">
-                  <TrashIcon />
-                </span>
-              </Button>
-            </div>
-          </div>
-        )
-      })
-      }
-
-      <Line />
-      <Header text="3. Details" />
-      <SelectBox {...FormInputFieldObject.complaintType} options={FormInputOption_ComplaintType} value={inputData.complaintType} isError={isError} onChange={handleSelectBoxChangeWrapper} />
-      <TextArea {...FormInputFieldObject.complaintTypeDetails} value={inputData.complaintTypeDetails} isError={isError} onChange={handleInputBoxChange} />
-      <SelectBox {...FormInputFieldObject.healthConcern} options={FormInputOption_YesNo} value={inputData.healthConcern} isError={isError} onChange={handleSelectBoxChangeWrapper} />
-      <TextArea {...FormInputFieldObject.healthConcernDetails} value={inputData.healthConcernDetails} isError={isError} onChange={handleInputBoxChange} />
-      <MultiSelectBox {...FormInputFieldObject.issue} options={FormInputOption_Issue} value={inputData.issue} isError={isError} onChange={handleMultiSelectBoxChangeWrapper} />
-      <TextArea {...FormInputFieldObject.issueDetails} value={inputData.issueDetails} isError={isError} onChange={handleInputBoxChange} />
-
-      <Line />
-      <Header text="4. Other" />
-      <SelectBox {...FormInputFieldObject.sampleHeld} options={FormInputOption_YesNo} value={inputData.sampleHeld} isError={isError} onChange={handleSelectBoxChangeWrapper} />
-      <SelectBox {...FormInputFieldObject.response} options={FormInputOption_Response} value={inputData.response} isError={isError} onChange={handleSelectBoxChangeWrapper} />  
-      <SelectBox {...FormInputFieldObject.followUpRequired} options={FormInputOption_YesNo} value={inputData.followUpRequired} isError={isError} onChange={handleSelectBoxChangeWrapper} />
-      <TextArea {...FormInputFieldObject.additionalNotes} value={inputData.additionalNotes} isError={isError} onChange={handleInputBoxChange} />
+    <form className="flex flex-col w-full space-y-6" onSubmit={handleSubmit}>
       
-      <div className="flex flex-col space-y-1">
-        <Button type="submit" className="bg-[var(--pale-green-color)] w-full" onClick={handleSubmit}>
-          <span className="text-white text--sub--small font-medium block h-fit w-fit p-1.5">
-            Submit
-          </span>
-        </Button>
-        {errorMessage && (
-          <div className="text-sm text-[var(--red-color)]">
-            {errorMessage}
+      {/* Complaint Source - At the very top */}
+      <div className="bg-white p-6 shadow-greenhouse">
+        <Header text="Complaint Source" />
+        <div className="mt-4">
+          <SelectBox 
+            {...FormInputFieldObject.complaintSource}
+            options={FormInputOption_ComplaintSource}
+            value={sharedData.complaintSource}
+            isError={isError}
+            onChange={handleSharedFieldChange}
+          />
+        </div>
+      </div>
+
+      {/* Section 1: Information (Shared across all products) */}
+      <div className="bg-white p-6 shadow-greenhouse">
+        <Header text="1. Customer Information" />
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mt-4">
+          <InputBox 
+            {...FormInputFieldObject.customerName}
+            value={sharedData.customerName}
+            isError={isError}
+            onChange={(e: FormEvent<HTMLFormElement>) => handleSharedFieldChange(e.currentTarget.name, e.currentTarget.value)}
+          />
+          <SelectBox 
+            {...FormInputFieldObject.location}
+            options={FormInputOption_Location}
+            value={sharedData.location}
+            isError={isError}
+            onChange={handleSharedFieldChange}
+          />
+        </div>
+        
+        {sharedData.location === "Customer Service (Grocery / Non-Greenhouse Retail Store)" && (
+          <div className="mt-4">
+            {loadingStoreLocations ? (
+              <div className="text-sm text-[var(--text-secondary)] p-3 bg-[var(--pale-green)] bg-opacity-10">
+                Loading store locations from database...
+              </div>
+            ) : (
+              <SelectBox 
+                {...FormInputFieldObject.locationCustomerService}
+                options={storeLocations}
+                value={sharedData.locationCustomerService}
+                isError={isError}
+                onChange={handleSharedFieldChange}
+                isSearchable={true}
+              />
+            )}
           </div>
         )}
       </div>
+
+      {/* Product Entries - Each in its own white box */}
+      <div className="space-y-6">
+        {/* Section Header with Add Button */}
+        <div className="bg-white p-6 shadow-greenhouse">
+          <div className="flex items-center justify-between">
+            <Header text="2. Product Information & Complaint Details" />
+            <Button 
+              type="button" 
+              variant="primary" 
+              onClick={handleAddProduct}
+              className="flex items-center gap-2"
+            >
+              <PlusIcon />
+              <span className="text-sm font-semibold">Add Another Product</span>
+            </Button>
+          </div>
+        </div>
+
+        {formEntries.map((entry, entryIndex) => (
+          <div key={entryIndex} className="bg-white p-6 shadow-greenhouse">
+            <div className="flex items-center justify-between mb-4">
+              <SubHeader text={`Product ${entryIndex + 1}`} />
+              {formEntries.length > 1 && (
+                <Button 
+                  type="button" 
+                  variant="danger" 
+                  onClick={() => handleRemoveProduct(entryIndex)}
+                  className="flex items-center gap-2"
+                >
+                  <TrashIcon />
+                  <span className="text-sm font-semibold">Remove</span>
+                </Button>
+              )}
+            </div>
+
+            {/* Product Details Grid */}
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+              
+              {/* Left Column: Product & Complaint */}
+              <div className="space-y-5">
+                <div className="space-y-4">
+                  <p className="text-sm font-bold text-[var(--olive-green)] uppercase tracking-wide">Product Details</p>
+                  <SelectBox 
+                    {...FormInputFieldObject.productFlavour}
+                    options={formOptionsProductFlavour[entryIndex]}
+                    value={entry.productFlavour}
+                    isError={isError}
+                    onChange={(name: string, value: string) => handleProductFieldChange(entryIndex, "productFlavour", value)}
+                  />
+                  <SelectBox 
+                    {...FormInputFieldObject.productSize}
+                    options={formOptionsProductSize[entryIndex]}
+                    value={entry.productSize}
+                    isError={isError}
+                    onChange={(name: string, value: string) => handleProductFieldChange(entryIndex, "productSize", value)}
+                  />
+                  <div className="grid grid-cols-2 gap-4">
+                    <InputBox 
+                      {...FormInputFieldObject.affectedUnit}
+                      value={entry.affectedUnit}
+                      isError={isError}
+                      onChange={(e: FormEvent<HTMLFormElement>) => 
+                        handleEntryFieldChange(entryIndex, e.currentTarget.name, e.currentTarget.value)
+                      }
+                    />
+                    <InputBox 
+                      {...FormInputFieldObject.bestBeforeDate}
+                      value={entry.bestBeforeDate}
+                      isError={isError}
+                      onChange={(e: FormEvent<HTMLFormElement>) => 
+                        handleEntryFieldChange(entryIndex, e.currentTarget.name, e.currentTarget.value)
+                      }
+                    />
+                  </div>
+                </div>
+
+                <div className="space-y-4">
+                  <p className="text-sm font-bold text-[var(--olive-green)] uppercase tracking-wide">Complaint Details</p>
+                  <SelectBox 
+                    {...FormInputFieldObject.complaintType}
+                    options={FormInputOption_ComplaintType}
+                    value={entry.complaintType}
+                    isError={isError}
+                    onChange={(name: string, value: string) => handleEntryFieldChange(entryIndex, name, value)}
+                  />
+                  <SelectBox 
+                    {...FormInputFieldObject.healthConcern}
+                    options={FormInputOption_YesNo}
+                    value={entry.healthConcern}
+                    isError={isError}
+                    onChange={(name: string, value: string) => handleEntryFieldChange(entryIndex, name, value)}
+                  />
+                  <MultiSelectBox 
+                    {...FormInputFieldObject.issue}
+                    options={FormInputOption_Issue}
+                    value={entry.issue}
+                    isError={isError}
+                    onChange={(name: string, value: string[]) => handleEntryFieldChange(entryIndex, name, value)}
+                  />
+                </div>
+              </div>
+
+              {/* Right Column: Response & Follow-up */}
+              <div className="space-y-5">
+                <div className="space-y-4">
+                  <p className="text-sm font-bold text-[var(--olive-green)] uppercase tracking-wide">Response & Follow-up</p>
+                  <SelectBox 
+                    {...FormInputFieldObject.productInPossession}
+                    options={FormInputOption_YesNo}
+                    value={entry.productInPossession}
+                    isError={isError}
+                    onChange={(name: string, value: string) => handleEntryFieldChange(entryIndex, name, value)}
+                  />
+                  <SelectBox 
+                    {...FormInputFieldObject.response}
+                    options={FormInputOption_Response}
+                    value={entry.response}
+                    isError={isError}
+                    onChange={(name: string, value: string) => handleEntryFieldChange(entryIndex, name, value)}
+                  />
+                  <SelectBox 
+                    {...FormInputFieldObject.followUpRequired}
+                    options={FormInputOption_YesNo}
+                    value={entry.followUpRequired}
+                    isError={isError}
+                    onChange={(name: string, value: string) => handleEntryFieldChange(entryIndex, name, value)}
+                  />
+                </div>
+
+                <div className="space-y-4">
+                  <p className="text-sm font-bold text-[var(--olive-green)] uppercase tracking-wide">Additional Notes</p>
+                  <TextArea 
+                    {...FormInputFieldObject.additionalNotes}
+                    value={entry.additionalNotes}
+                    isError={isError}
+                    onChange={(e: FormEvent<HTMLFormElement>) => 
+                      handleEntryFieldChange(entryIndex, e.currentTarget.name, e.currentTarget.value)
+                    }
+                  />
+                </div>
+              </div>
+            </div>
+          </div>
+        ))}
+      </div>
+
+      {/* Submit Button */}
+      <div className="flex flex-col space-y-4 pt-4">
+        <Button type="submit" variant="secondary" className="w-full py-4 text-lg">
+          <span className="font-bold uppercase tracking-wide">
+            Submit {formEntries.length > 1 ? `${formEntries.length} Complaints` : 'Complaint'}
+          </span>
+        </Button>
+      </div>
+
+      {/* Success Modal */}
+      <SuccessModal
+        isOpen={showSuccessModal}
+        onClose={() => setShowSuccessModal(false)}
+        complaintsCount={successCount}
+      />
+
+      {/* Error Modal */}
+      <ErrorModal
+        isOpen={showErrorModal}
+        onClose={() => setShowErrorModal(false)}
+        error={databaseError}
+      />
     </form>
   )
 }
 
 export default FormSection;
 
-const Line = () => {
-  return (
-    <div className="w-full h-0.5 bg-[var(--black-color)] mt-2" />
-  )
-}
-
+/**
+ * Section header component
+ */
 interface HeaderProps {
   text: string
 }
 const Header = ({text}: HeaderProps) => {
   return (
-    <div className="text-[var(--black-color)] text--sub--header">
+    <div className="text-[var(--text-primary)] text-2xl font-bold">
       {text}
     </div>
   )
 }
 
+/**
+ * Subsection header component
+ */
 const SubHeader = ({text}: HeaderProps) => {
   return (
-    <div className="text-[var(--black-color)] text--content">
+    <div className="text-[var(--text-primary)] text-xl font-semibold">
       {text}
     </div>
   )
 }
 
-const checkInputData = (inputData: FormInputData_Type) : boolean => {
-  var isError: boolean = false;
-  type Keys = keyof FormInputData_Type;
+/**
+ * Validation helper - checks if a single entry has all required fields
+ */
+const checkInputData = (inputData: FormInputData_Type): boolean => {
+  let isError = false;
+  
   for (const field of FormInputFieldRequired) {
-    if (field === "productFlavour" || field == "productSize" || field == "affectedUnit" || field === "bestBeforeDate") {
-      // check each product
-      inputData.product.forEach((product: FormInputProduct_Type) => {
-        isError = isError || product.productFlavour === "" || product.productSize === "" || product.affectedUnit === "" || product.bestBeforeDate === "";
-      })
-    } else if (field === "locationCustomerService" && inputData.location !== "Customer Service (Grocery / Non-Greenhouse Retail Store)") {
-      // skip locationCustomerService when location is not Customer Service (Grocery / Non-Greenhouse Retail Store)
-    } else if (field === "issue") {
-      // check issue 
-      isError = isError || inputData.issue.length === 0; 
-    } else {
-      // check the other fields
-      const currentField: Keys = field as any;
-      const value: string = inputData[currentField] as any;
-      isError = isError || value.trim() === "";
+    // Skip locationCustomerService unless location requires it
+    if (field === "locationCustomerService" && 
+        inputData.location !== "Customer Service (Grocery / Non-Greenhouse Retail Store)") {
+      continue;
     }
+    
+    // Check multi-select fields (issue)
+    if (field === "issue") {
+      isError = isError || inputData.issue.length === 0;
+    } 
+    // Check all other fields
+    else {
+      const value = inputData[field as keyof FormInputData_Type];
+      if (typeof value === 'string') {
+        isError = isError || value.trim() === "";
+      }
+    }
+    
+    // Early return if error found
     if (isError) {
-      // early return
-      return isError;
+      return true;
     }
   }
+  
   return isError;
 }
