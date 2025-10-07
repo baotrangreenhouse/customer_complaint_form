@@ -1,12 +1,11 @@
 "use server"
 
-import { fetchStoreLocations } from "@/lib/externalSqlClient";
+import storeLocationsData from "@/../storeLocations.json";
 
 /**
  * Server Action: Fetch Store Locations
  * 
- * Retrieves unique store names from the external DearCustomers SQL Server database.
- * Filters by SalesRepresentative (Grocery or Foodservice).
+ * Retrieves store names from the storeLocations.json file.
  * 
  * This is called when user selects "Customer Service (Grocery / Non-Greenhouse Retail Store)"
  * as the location to populate the locationCustomerService dropdown.
@@ -15,23 +14,24 @@ import { fetchStoreLocations } from "@/lib/externalSqlClient";
  */
 export async function getStoreLocations(): Promise<{ data: string[], error: string | null }> {
   try {
-    console.log('[Server Action] Fetching store locations...');
+    console.log('[Server Action] Fetching store locations from JSON file...');
     
-    const locations = await fetchStoreLocations();
+    // storeLocationsData is already an array of strings from the JSON file
+    const locations = storeLocationsData;
     
-    console.log('[Server Action] Successfully fetched', locations.length, 'locations');
+    console.log('[Server Action] Successfully loaded', locations.length, 'locations');
     
     return {
       data: locations,
       error: null
     };
   } catch (error) {
-    console.error('[Server Action] Error fetching store locations:');
+    console.error('[Server Action] Error loading store locations:');
     console.error(error);
     
     return {
       data: [],
-      error: error instanceof Error ? error.message : 'Failed to fetch store locations'
+      error: error instanceof Error ? error.message : 'Failed to load store locations'
     };
   }
 }
