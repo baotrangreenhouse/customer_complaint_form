@@ -32,18 +32,19 @@ export type FormInputField_Type = {
 export type FormInputFieldObject_Type = {
   complaintSource: FormInputField_Type,  // Customer vs Store
   customerName: FormInputField_Type,
+  customerEmail: FormInputField_Type,
+  customerPhone: FormInputField_Type,
   location: FormInputField_Type,
   locationCustomerService: FormInputField_Type,
   productFlavour: FormInputField_Type,
   productSize: FormInputField_Type,
   bestBeforeDate: FormInputField_Type,
   affectedUnit: FormInputField_Type,
-  complaintType: FormInputField_Type,
-  healthConcern: FormInputField_Type,
+  followUpDepartment: FormInputField_Type,  // Department: QA/Customer Service/Logistics
   issue: FormInputField_Type,
   productInPossession: FormInputField_Type,  // Renamed from sampleHeld
   response: FormInputField_Type,
-  followUpRequired: FormInputField_Type,
+  followUpRequired: FormInputField_Type,     // Yes/No - does this need follow up?
   additionalNotes: FormInputField_Type
 }
 
@@ -75,6 +76,8 @@ export type FormInputData_Type = {
   
   // Customer information
   customerName: string,
+  customerEmail: string,
+  customerPhone: string,
   location: string,
   locationCustomerService: string,
   
@@ -85,14 +88,13 @@ export type FormInputData_Type = {
   bestBeforeDate: string,
   
   // Complaint details
-  complaintType: string,
-  healthConcern: string,
-  issue: string[],              // Array of issues (multi-select)
+  followUpDepartment: string,          // Department: QA, Customer Service, or Logistics
+  issue: string[],                      // Array of issues (multi-select, filtered by department)
   
   // Response and follow-up
   productInPossession: string,  // Renamed from sampleHeld
   response: string,
-  followUpRequired: string,
+  followUpRequired: string,             // Yes/No - does this need follow up?
   additionalNotes: string
 }
 

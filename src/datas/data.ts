@@ -106,26 +106,55 @@ export const LOCATION_CUSTOMER_SERVICE: string[] = [
 ]
 
 export const COMPLAINT_SOURCE: string[] = ["Customer", "Store"]
-export const COMPLAINT_TYPE: string[] = [
-  "Contamination",
-  "Mold",
-  "Taste/Smell Issue",
-  "Packaging Defect",
-  "Product Quality",
-  "Other"
-]
+
+export const FOLLOW_UP_DEPARTMENT: string[] = ["QA", "Customer Service", "Logistics"]
+
 export const YES_NO: string[] = ["Yes", "No"]
-export const ISSUE: string[] = [
-  "Smells Off / Rancid",
-  "Smells Sour / Fermented",
-  "Foreign Material",
-  "Packaging (broken seals, broken glass, caps, etc)",
-  "Packaging (bloated carton, leaking carton, etc",
-  "Taste Variance (sour, tastes off, etc)",
-  "Visual Appearance (colour variance, curdling, etc)",
-  "Mold (on cap, bottle neck)",
-  "Milk / Shake - Curdling, Separation"
+
+// Issue types organized by department
+type IssueByDepartment_Type = {
+  department: string,
+  issues: string[]
+}
+
+export const ISSUE_BY_DEPARTMENT: IssueByDepartment_Type[] = [
+  {
+    department: "QA",
+    issues: [
+      "Smells rancid",
+      "Fermented",
+      "Off taste",
+      "Foreign Material",
+      "Mold under cap",
+      "Mold on bottle neck",
+      "Curdling / clumpy",
+      "Mold in product",
+      "Visual appearance (color variance, product separation etc.)",
+      "Other"
+    ]
+  },
+  {
+    department: "Customer Service",
+    issues: [
+      "Bloated Carton",
+      "Leaking Carton",
+      "Leaking Bottle",
+      "Broken Seal",
+      "Broken Bottle",
+      "Damaged Cap",
+      "Other"
+    ]
+  },
+  {
+    department: "Logistics",
+    issues: [
+      "Late Delivery",
+      "Warm Bottles",
+      "Other"
+    ]
+  }
 ]
+
 export const RESPONSE_ACTION: string[] = [
   "Customer Refunded",
   "Product Replaced",
@@ -163,6 +192,14 @@ export const filterSize = (flavour: string, size: string) : boolean => {
     }
   }
   return false;
+}
+
+export const filterIssueByDepartment = (department: string) : string[] => {
+  if (!department) {
+    return [];
+  }
+  const departmentData = ISSUE_BY_DEPARTMENT.find(d => d.department === department);
+  return departmentData ? departmentData.issues : [];
 }
 
 

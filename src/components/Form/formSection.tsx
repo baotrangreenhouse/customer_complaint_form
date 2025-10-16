@@ -4,7 +4,7 @@ import { FormEvent, useEffect, useState } from "react";
 import { FormInputData_Type, FormInputOption_Type } from "@/types/type";
 import { FormInputFieldObject, FormInputFieldRequired } from "@/types/data";
 import SelectBox, { MultiSelectBox } from "./selectBox";
-import { COMPLAINT_SOURCE, COMPLAINT_TYPE, FLAVOUR, ISSUE, LOCATION, RESPONSE_ACTION, SIZE, YES_NO, convertToOption, filterFlavour, filterSize} from "@/datas/data";
+import { COMPLAINT_SOURCE, FOLLOW_UP_DEPARTMENT, LOCATION, RESPONSE_ACTION, YES_NO, convertToOption, filterFlavour, filterSize, filterIssueByDepartment, FLAVOUR, SIZE} from "@/datas/data";
 import InputBox from "./inputBox";
 import Button from "../Button/button";
 import { PlusIcon, TrashIcon } from "../Icon/icon";
@@ -21,14 +21,15 @@ import { getStoreLocations } from "@/app/actions/getStoreLocations";
 const FormInputDataDefault: FormInputData_Type = {
   complaintSource: "",
   customerName: "",
+  customerEmail: "",
+  customerPhone: "",
   location: "",
   locationCustomerService: "",
   productFlavour: "",
   productSize: "",
   affectedUnit: "1",
   bestBeforeDate: "",
-  complaintType: "",
-  healthConcern: "",
+  followUpDepartment: "",
   issue: [],
   productInPossession: "",
   response: "",
@@ -39,9 +40,8 @@ const FormInputDataDefault: FormInputData_Type = {
 // Convert constants to react-select options
 const FormInputOption_ComplaintSource: FormInputOption_Type[] = convertToOption(COMPLAINT_SOURCE);
 const FormInputOption_Location: FormInputOption_Type[] = convertToOption(LOCATION);
-const FormInputOption_ComplaintType: FormInputOption_Type[] = convertToOption(COMPLAINT_TYPE);
+const FormInputOption_FollowUpDepartment: FormInputOption_Type[] = convertToOption(FOLLOW_UP_DEPARTMENT);
 const FormInputOption_YesNo: FormInputOption_Type[] = convertToOption(YES_NO);
-const FormInputOption_Issue: FormInputOption_Type[] = convertToOption(ISSUE);
 const FormInputOption_Response: FormInputOption_Type[] = convertToOption(RESPONSE_ACTION);
 
 /**
@@ -62,6 +62,8 @@ const FormSection = () => {
   const [sharedData, setSharedData] = useState({
     complaintSource: "",
     customerName: "",
+    customerEmail: "",
+    customerPhone: "",
     location: "",
     locationCustomerService: ""
   });
@@ -69,6 +71,9 @@ const FormSection = () => {
   // Product flavour/size options for each entry (dynamic filtering)
   const [formOptionsProductFlavour, setFormOptionsProductFlavour] = useState<FormInputOption_Type[][]>([convertToOption(FLAVOUR)]);
   const [formOptionsProductSize, setFormOptionsProductSize] = useState<FormInputOption_Type[][]>([convertToOption(SIZE)]);
+  
+  // Issue options for each entry (filtered by department)
+  const [formOptionsIssue, setFormOptionsIssue] = useState<FormInputOption_Type[][]>([[]]);
   
   // Dynamic store locations from external database
   const [storeLocations, setStoreLocations] = useState<FormInputOption_Type[]>([]);
@@ -172,6 +177,26 @@ const FormSection = () => {
     setFormOptionsProductSize(newSizeOptions);
   }
 
+    /**
+   * Handle follow-up department change with cascading issue options
+   */
+  const handleDepartmentChange = (entryIndex: number, name: string, value: string) => {
+    // Update the entry with new department
+    const updatedEntries = [...formEntries];
+    updatedEntries[entryIndex] = {
+      ...updatedEntries[entryIndex],
+      [name]: value,
+      issue: [] // Clear issues when department changes
+    };
+    setFormEntries(updatedEntries);
+
+    // Update issue options based on selected department
+    const newIssueOptions = [...formOptionsIssue];
+    const departmentIssues = filterIssueByDepartment(value);
+    newIssueOptions[entryIndex] = convertToOption(departmentIssues);
+    setFormOptionsIssue(newIssueOptions);
+  }
+
   /**
    * Add a new product form entry
    */
@@ -181,6 +206,8 @@ const FormSection = () => {
       // Copy shared fields to new entry
       complaintSource: sharedData.complaintSource,
       customerName: sharedData.customerName,
+      customerEmail: sharedData.customerEmail,
+      customerPhone: sharedData.customerPhone,
       location: sharedData.location,
       locationCustomerService: sharedData.locationCustomerService
     };
@@ -188,6 +215,7 @@ const FormSection = () => {
     setFormEntries([...formEntries, newEntry]);
     setFormOptionsProductFlavour([...formOptionsProductFlavour, convertToOption(FLAVOUR)]);
     setFormOptionsProductSize([...formOptionsProductSize, convertToOption(SIZE)]);
+    setFormOptionsIssue([...formOptionsIssue, []]);
   }
 
   /**
@@ -202,6 +230,7 @@ const FormSection = () => {
     setFormEntries(formEntries.filter((_, index) => index !== entryIndex));
     setFormOptionsProductFlavour(formOptionsProductFlavour.filter((_, index) => index !== entryIndex));
     setFormOptionsProductSize(formOptionsProductSize.filter((_, index) => index !== entryIndex));
+    setFormOptionsIssue(formOptionsIssue.filter((_, index) => index !== entryIndex));
   }
 
   /**
@@ -215,7 +244,7 @@ const FormSection = () => {
     setIsError(hasErrors);
     
     if (hasErrors) {
-      setErrorMessage("Please fill in all required fields for each product");
+      setErrorMessage("Please fill in all required fields correctly and ensure email/phone formats are valid");
       return;
     }
 
@@ -234,11 +263,14 @@ const FormSection = () => {
       setSharedData({
         complaintSource: "",
         customerName: "",
+        customerEmail: "",
+        customerPhone: "",
         location: "",
         locationCustomerService: ""
       });
       setFormOptionsProductFlavour([convertToOption(FLAVOUR)]);
       setFormOptionsProductSize([convertToOption(SIZE)]);
+      setFormOptionsIssue([[]]);
       setErrorMessage("");
       setIsError(false);
       setDatabaseError(null);
@@ -280,6 +312,18 @@ const FormSection = () => {
           <InputBox 
             {...FormInputFieldObject.customerName}
             value={sharedData.customerName}
+            isError={isError}
+            onChange={(e: FormEvent<HTMLFormElement>) => handleSharedFieldChange(e.currentTarget.name, e.currentTarget.value)}
+          />
+          <InputBox 
+            {...FormInputFieldObject.customerEmail}
+            value={sharedData.customerEmail}
+            isError={isError}
+            onChange={(e: FormEvent<HTMLFormElement>) => handleSharedFieldChange(e.currentTarget.name, e.currentTarget.value)}
+          />
+          <InputBox 
+            {...FormInputFieldObject.customerPhone}
+            value={sharedData.customerPhone}
             isError={isError}
             onChange={(e: FormEvent<HTMLFormElement>) => handleSharedFieldChange(e.currentTarget.name, e.currentTarget.value)}
           />
@@ -391,22 +435,15 @@ const FormSection = () => {
                 <div className="space-y-4">
                   <p className="text-sm font-bold text-[var(--olive-green)] uppercase tracking-wide">Complaint Details</p>
                   <SelectBox 
-                    {...FormInputFieldObject.complaintType}
-                    options={FormInputOption_ComplaintType}
-                    value={entry.complaintType}
+                    {...FormInputFieldObject.followUpDepartment}
+                    options={FormInputOption_FollowUpDepartment}
+                    value={entry.followUpDepartment}
                     isError={isError}
-                    onChange={(name: string, value: string) => handleEntryFieldChange(entryIndex, name, value)}
-                  />
-                  <SelectBox 
-                    {...FormInputFieldObject.healthConcern}
-                    options={FormInputOption_YesNo}
-                    value={entry.healthConcern}
-                    isError={isError}
-                    onChange={(name: string, value: string) => handleEntryFieldChange(entryIndex, name, value)}
+                    onChange={(name: string, value: string) => handleDepartmentChange(entryIndex, name, value)}
                   />
                   <MultiSelectBox 
                     {...FormInputFieldObject.issue}
-                    options={FormInputOption_Issue}
+                    options={formOptionsIssue[entryIndex] || []}
                     value={entry.issue}
                     isError={isError}
                     onChange={(name: string, value: string[]) => handleEntryFieldChange(entryIndex, name, value)}
@@ -417,7 +454,7 @@ const FormSection = () => {
               {/* Right Column: Response & Follow-up */}
               <div className="space-y-5">
                 <div className="space-y-4">
-                  <p className="text-sm font-bold text-[var(--olive-green)] uppercase tracking-wide">Response & Follow-up</p>
+                  <p className="text-sm font-bold text-[var(--olive-green)] uppercase tracking-wide">Response</p>
                   <SelectBox 
                     {...FormInputFieldObject.productInPossession}
                     options={FormInputOption_YesNo}
@@ -517,6 +554,12 @@ const SubHeader = ({text}: HeaderProps) => {
 const checkInputData = (inputData: FormInputData_Type): boolean => {
   let isError = false;
   
+  // Email validation regex
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  
+  // Phone validation regex
+  const phoneRegex = /^[\+]?[(]?[0-9]{3}[)]?[-\s\.]?[0-9]{3}[-\s\.]?[0-9]{4,6}$/;
+  
   for (const field of FormInputFieldRequired) {
     // Skip locationCustomerService unless location requires it
     if (field === "locationCustomerService" && 
@@ -540,6 +583,16 @@ const checkInputData = (inputData: FormInputData_Type): boolean => {
     if (isError) {
       return true;
     }
+  }
+  
+  // Validate email format if email is provided
+  if (inputData.customerEmail && !emailRegex.test(inputData.customerEmail)) {
+    return true;
+  }
+  
+  // Validate phone format if phone is provided
+  if (inputData.customerPhone && !phoneRegex.test(inputData.customerPhone)) {
+    return true;
   }
   
   return isError;

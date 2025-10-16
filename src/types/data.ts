@@ -37,6 +37,16 @@ export const FormInputFieldObject: FormInputFieldObject_Type = {
     name: "customerName",
     type: "text"
   },
+  customerEmail: {
+    label: "Customer Email",
+    name: "customerEmail",
+    type: "email"
+  },
+  customerPhone: {
+    label: "Customer Phone Number",
+    name: "customerPhone",
+    type: "tel"
+  },
   location: {
     label: "Location", 
     name: "location",
@@ -71,14 +81,9 @@ export const FormInputFieldObject: FormInputFieldObject_Type = {
   },
 
   // === COMPLAINT DETAILS ===
-  complaintType: {
-    label: "Complaint Type",
-    name: "complaintType",
-    type: "text"
-  },
-  healthConcern: {
-    label: "Health Concern?",
-    name: "healthConcern",
+  followUpDepartment: {
+    label: "Follow Up Department",
+    name: "followUpDepartment",
     type: "text"
   },
   issue: {
@@ -137,12 +142,11 @@ export const FormInputFieldRequired: string[] = [
   "bestBeforeDate",
   
   // Complaint details
-  "complaintType",
-  "healthConcern",
+  "followUpDepartment",      // Department selection (QA/Customer Service/Logistics)
   "issue",                   // At least one issue must be selected
   
   // Response information
   "productInPossession", 
   "response",
-  "followUpRequired",
+  "followUpRequired",        // Yes/No for follow-up needed
 ];

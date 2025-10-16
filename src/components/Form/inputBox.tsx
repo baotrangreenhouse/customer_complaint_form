@@ -40,11 +40,26 @@ const InputBox = (props: Props) => {
   // Check if this field is required based on the global required fields list
   const isRequired: boolean = FormInputFieldRequired.includes(name);
   
+  // Email validation regex
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  
+  // Phone validation regex (accepts various formats: (123) 456-7890, 123-456-7890, 1234567890, +1 123 456 7890)
+  const phoneRegex = /^[\+]?[(]?[0-9]{3}[)]?[-\s\.]?[0-9]{3}[-\s\.]?[0-9]{4,6}$/;
+  
+  // Validate email format
+  const isEmailInvalid: boolean = type === 'email' && !!value && !emailRegex.test(value);
+  
+  // Validate phone format
+  const isPhoneInvalid: boolean = type === 'tel' && !!value && !phoneRegex.test(value);
+  
   // Show error styling only if: global error state + field is required + field is empty
   const isErrorCurrent: boolean = isError && isRequired && !value;
   
+  // Show format error if value exists but format is invalid
+  const isFormatError: boolean = isEmailInvalid || isPhoneInvalid;
+  
   // Show success styling if field is filled (optional enhancement)
-  const isSuccess: boolean = isRequired && !!value;
+  const isSuccess: boolean = isRequired && !!value && !isFormatError;
   
   return (
     <div className="w-full">
@@ -69,8 +84,8 @@ const InputBox = (props: Props) => {
         type={type}
         className={cn(
           "text-[var(--text-primary)] text--content input--box h-12 px-3 py-2",
-          isErrorCurrent && "input--box--error",
-          !isErrorCurrent && isSuccess && "input--box--success"
+          (isErrorCurrent || isFormatError) && "input--box--error",
+          !(isErrorCurrent || isFormatError) && isSuccess && "input--box--success"
         )}
         value={value}
         onChange={(e) => onChange(e)}
@@ -83,6 +98,19 @@ const InputBox = (props: Props) => {
       {isErrorCurrent && (
         <p className="text-xs text-[var(--error-red)] mt-1 font-medium">
           This field is required
+        </p>
+      )}
+      
+      {/* Format validation error messages */}
+      {isEmailInvalid && (
+        <p className="text-xs text-[var(--error-red)] mt-1 font-medium">
+          Please enter a valid email address (e.g., name@example.com)
+        </p>
+      )}
+      
+      {isPhoneInvalid && (
+        <p className="text-xs text-[var(--error-red)] mt-1 font-medium">
+          Please enter a valid phone number (e.g., 123-456-7890 or (123) 456-7890)
         </p>
       )}
     </div>

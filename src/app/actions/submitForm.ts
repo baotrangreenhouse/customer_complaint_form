@@ -36,6 +36,8 @@ export const submitForm = async (inputDataArray: FormInputData_Type[]): Promise<
     
     // Customer information
     customerName: inputData.customerName,
+    customerEmail: inputData.customerEmail,
+    customerPhone: inputData.customerPhone,
     location: inputData.location,
     locationCustomerService: inputData.locationCustomerService,
     
@@ -46,14 +48,13 @@ export const submitForm = async (inputDataArray: FormInputData_Type[]): Promise<
     bestBeforeDate: inputData.bestBeforeDate,
     
     // Complaint details
-    complaintType: inputData.complaintType,
-    healthConcern: inputData.healthConcern,
+    followUpDepartment: inputData.followUpDepartment,  // Department (QA/Customer Service/Logistics)
     issue: inputData.issue.join(";"), // Convert array to semicolon-separated string
     
     // Response and follow-up
     productInPossession: inputData.productInPossession, // Renamed from sampleHeld
     response: inputData.response,
-    followUpRequired: inputData.followUpRequired,
+    followUpRequired: inputData.followUpRequired,  // Yes/No for follow-up needed
     additionalNotes: inputData.additionalNotes
   }));
 
